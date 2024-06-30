@@ -1,4 +1,28 @@
-# Welcome to your Expo app 👋
+# Ask Me Anything App
+
+This is the ask me anything front end application that will be written in
+react native. It will be available on iOS and Android. I may also expose the
+web client but only if I feel like it.
+
+## Running
+
+TODO: Get it to run
+
+## Testing
+
+See here for details around testing the application.
+
+### Unit Testing
+
+TODO: Get Unit Tests set up
+
+### Integration Testing
+
+TODO: Get Integ Tests set up
+
+## Publishing
+
+TODO: Figure out app store publishing (again)
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
