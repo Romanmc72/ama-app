@@ -1,5 +1,6 @@
 import { ColorScheme } from '@/constants/Colors';
 import { Subscription } from './subscription';
+import { ListId } from './list';
 
 /** The settings related to how the user accesses the app. */
 export type UserSettings = {
@@ -10,7 +11,7 @@ export type UserSettings = {
 /** The properties required to get a user. */
 export interface UserId {
   /** The unique user identifier. */
-  id: string;
+  userId: string;
 }
 
 /** The shape of the user's data. */
@@ -21,6 +22,8 @@ export type UserBase = {
   subscription: Subscription;
   /** Any settings this user has saved. */
   settings: UserSettings;
+  /** The lists that this user has created. */
+  lists: ListId[];
 };
 
 export type User = UserBase & UserId;

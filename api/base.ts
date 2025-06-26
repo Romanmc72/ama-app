@@ -75,3 +75,22 @@ export function convertPropsToQueryParams(props: QueryParamObject): URLSearchPar
   });
   return params;
 }
+
+/**
+ * Replaces the default path.join function which does not ship with react native.
+ * @param values the list of values to join as paths
+ * @return the values joined as paths with one `/` between each element
+ */
+export function join(...values: string[]): string {
+  return values
+    .map((value, index) => {
+      if (value.startsWith('/') && index > 0) {
+        value = value.slice(1);
+      }
+      if (value.endsWith('/')) {
+        value = value.slice(-1);
+      }
+      return value;
+    })
+    .join('/');
+}

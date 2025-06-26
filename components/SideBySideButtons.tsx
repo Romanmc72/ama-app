@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { View } from 'react-native';
 
 /** The properties for creating appropriately spaced side-by-side buttons. */
@@ -16,8 +16,12 @@ export default function SideBySideButtons(props: SideBySideButtonProps): JSX.Ele
   const spacing = Math.round(25 / (props.buttons.length * 2));
   return (
     <View style={{ flexDirection: 'row' }}>
-      {props.buttons.map((button) => (
-        <View style={{ marginLeft: `${spacing}%`, marginRight: `${spacing}%` }}>{button}</View>
+      {props.buttons.map((button, index) => (
+        <View
+          key={`side-by-side-button-${index}`}
+          style={{ marginLeft: `${spacing}%`, marginRight: `${spacing}%` }}>
+          {button}
+        </View>
       ))}
     </View>
   );

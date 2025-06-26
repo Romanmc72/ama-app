@@ -6,6 +6,5 @@ export const viewStyles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: '100%',
     width: '100%',
-    // marginVertical: '50%',
   },
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import { fetchQuestion } from '@/api/question';
 import { Question } from '@/shapes';
 import Br from '@/components/Br';
@@ -16,7 +16,7 @@ export default function Ask(): JSX.Element {
 
   const getNewQuestion = async () => {
     setFetchingQuestion(true);
-    fetchQuestion({ finalId: question?.id }).then(
+    fetchQuestion({ finalId: question?.questionId }).then(
       (data) => {
         setQuestion(data);
       },

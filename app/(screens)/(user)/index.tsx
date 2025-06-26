@@ -18,6 +18,8 @@ export default function Settings(): JSX.Element {
       <Button onPress={() => router.push(routeTree.USER.languageSettings.routerPath)}>
         Language
       </Button>
+      <Br />
+      <Button onPress={() => router.push(routeTree.ROOT.index.routerPath)}>Log Out</Button>
     </ThemedView>
   );
 }

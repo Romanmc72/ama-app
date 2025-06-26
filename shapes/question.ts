@@ -9,7 +9,7 @@ export type QuestionBase = {
 /** Just the question identifier. */
 export type QuestionId = {
   /** The unique identifier for the question. */
-  id: string;
+  questionId: string;
 };
 
 /** A fully formed question. */

@@ -1,5 +1,5 @@
 import { Question, QuestionBase, QuestionId } from '@/shapes';
-import { convertPropsToQueryParams, hitApi } from './base';
+import { convertPropsToQueryParams, hitApi, join } from './base';
 
 const path = 'questions';
 
@@ -64,5 +64,5 @@ export async function createQuestion(props: QuestionBase): Promise<Question> {
  * @param props The question id to be deleted.
  */
 export async function deleteQuestion(props: QuestionId): Promise<void> {
-  await hitApi({ method: 'DELETE', path: [path, props.id].join('/') });
+  await hitApi({ method: 'DELETE', path: join(path, props.id) });
 }
