@@ -1,7 +1,7 @@
 import { Question, QuestionBase, QuestionId } from '@/shapes';
 import { convertPropsToQueryParams, hitApi, join } from './base';
 
-const path = 'questions';
+const path = 'question';
 
 /** The properties required to fetch multiple questions. */
 export interface FetchQuestionsProps {
@@ -10,7 +10,9 @@ export interface FetchQuestionsProps {
   /** */
   limit?: number;
   /** The tags to find matching questions for. */
-  ags?: string[];
+  tags?: string[];
+  /** Whether or not to fetch random questions. If finalId is provided, this will be ignored. */
+  random?: boolean;
 }
 
 /**
@@ -38,8 +40,8 @@ export interface FetchQuestionProps
  * @returns One question
  */
 export async function fetchQuestion(props: FetchQuestionProps): Promise<Question> {
-  if (props.id) {
-    return await hitApi<Question, undefined>({ path: [path, props.id].join('/') });
+  if (props.questionId) {
+    return await hitApi<Question, undefined>({ path: [path, props.questionId].join('/') });
   }
   const params = convertPropsToQueryParams(props);
   params.set('limit', '1');
@@ -64,5 +66,5 @@ export async function createQuestion(props: QuestionBase): Promise<Question> {
  * @param props The question id to be deleted.
  */
 export async function deleteQuestion(props: QuestionId): Promise<void> {
-  await hitApi({ method: 'DELETE', path: join(path, props.id) });
+  await hitApi({ method: 'DELETE', path: join(path, props.questionId) });
 }

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
 import { ThemedTextProps } from './ThemedText';
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import { COMMON_COLORS } from '@/constants/Colors';
 
 /** The properties required for the clickable text. */
