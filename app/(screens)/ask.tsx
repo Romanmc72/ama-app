@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX, useCallback, useState } from 'react';
 import Br from '@/components/Br';
 import Button from '@/components/Button';
 import { ThemedText } from '@/components/ThemedText';
@@ -13,21 +13,36 @@ export default function Ask(): JSX.Element {
   const [hasPressed, setHasPressed] = useState(false);
   const { data: question, isPending, isError, refetch } = useQuestion({});
 
-  return (
-    <ThemedView style={viewStyles.view}>
-      <ThemedText type="title">{question ? question.prompt : 'Grab a question!'}</ThemedText>
-      <Br />
-      {question && hasPressed ? null : <Waver waveAble={'👇'} />}
-      <Br />
+  const GetQuestionButton = useCallback(() => {
+    return (
       <Button
-        disabled={!isPending}
+        disabled={!isPending || isError}
         onPress={() => {
           console.log('Fetching new question...');
-          refetch({});
+          if (hasPressed) refetch({ cancelRefetch: true });
           setHasPressed(true);
         }}>
         {isError ? 'Oops! Try again' : 'Get New Question'}
       </Button>
+    );
+  }, [hasPressed, isError, isPending, refetch, setHasPressed]);
+
+  if (question) {
+    return (
+      <ThemedView style={viewStyles.view}>
+        <ThemedText type="title">{question.prompt}</ThemedText>
+        <Br />
+        <GetQuestionButton />
+      </ThemedView>
+    );
+  }
+  return (
+    <ThemedView style={viewStyles.view}>
+      <ThemedText type="title">Grab a new Question!</ThemedText>
+      <Br />
+      {hasPressed ? null : <Waver waveAble={'👇'} />}
+      <Br />
+      <GetQuestionButton />
     </ThemedView>
   );
 }
