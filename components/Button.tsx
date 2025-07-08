@@ -67,7 +67,7 @@ export default function Button(props: ButtonProps): JSX.Element {
       aria-label={`${props.children} button`}
       aria-disabled={props.disabled ?? false}
       aria-selected={focused}
-      style={styles.button}
+      style={() => [styles.button, props.disabled && { opacity: 0.5 }]}
       disabled={props.disabled ?? false}
       onPress={props.onPress}
       onFocus={focus}

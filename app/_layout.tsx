@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from '@/constants/Routes';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import { UserProvider } from '@/contexts';
+
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
@@ -11,21 +13,23 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          {Object.entries(routeTree.ROOT).map(([routeName, route]) => (
-            <Stack.Screen
-              key={route.path}
-              name={routeName}
-              options={{
-                title: route.title,
-                headerShown: route.path !== routeTree.ROOT.index.path,
-              }}
-            />
-          ))}
-          <Stack.Screen name="(screens)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
+      <UserProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            {Object.entries(routeTree.ROOT).map(([routeName, route]) => (
+              <Stack.Screen
+                key={route.path}
+                name={routeName}
+                options={{
+                  title: route.title,
+                  headerShown: route.path !== routeTree.ROOT.index.path,
+                }}
+              />
+            ))}
+            <Stack.Screen name="(screens)" options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </UserProvider>
     </QueryClientProvider>
   );
 }

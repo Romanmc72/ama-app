@@ -1,7 +1,7 @@
 import { User, UserBase, UserId } from '@/shapes';
 import { hitApi, join } from './base';
 
-const path = 'users';
+const path = 'user';
 
 /**
  * Retrieve user data from the backend.
@@ -9,7 +9,7 @@ const path = 'users';
  * @returns The promise containing the user data fetched.
  */
 export async function getUser(props: UserId): Promise<User> {
-  return await hitApi({ path: join(path, props.id) });
+  return await hitApi({ path: join(path, props.userId) });
 }
 
 /**
@@ -20,7 +20,7 @@ export async function getUser(props: UserId): Promise<User> {
  * @returns The updated user object.
  */
 export async function updateUser(props: User): Promise<User> {
-  return await hitApi({ path: join(path, props.id), body: props, method: 'PUT' });
+  return await hitApi({ path: join(path, props.userId), body: props, method: 'PUT' });
 }
 
 /**
@@ -42,5 +42,5 @@ export async function createUser(props: UserBase): Promise<User> {
  * @returns Nothing.
  */
 export async function deleteUser(props: UserId): Promise<void> {
-  return await hitApi({ path: join(path, props.id), method: 'DELETE' });
+  return await hitApi({ path: join(path, props.userId), method: 'DELETE' });
 }

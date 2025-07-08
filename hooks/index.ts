@@ -1,3 +1,3 @@
 export * from './useColorScheme';
-export * from './useQuestion';
+export * from './api';
 export * from './useThemeColor';

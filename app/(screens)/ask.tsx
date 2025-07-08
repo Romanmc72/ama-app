@@ -8,26 +8,41 @@ import { ThemedView } from '@/components/ThemedView';
 import { useQuestion } from '@/hooks';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
+/** Wait a little bit before re-enabling the button. */
+const buttonDelay = 1000;
 
 export default function Ask(): JSX.Element {
   const [hasPressed, setHasPressed] = useState(false);
-  const { data: question, isPending, isError, refetch } = useQuestion({});
+  const [justPressed, setJustPressed] = useState(false);
+  const {
+    data: question,
+    isError,
+    isFetching,
+    error,
+    refetch,
+  } = useQuestion({
+    random: true,
+  });
 
   const GetQuestionButton = useCallback(() => {
     return (
       <Button
-        disabled={!isPending || isError}
+        disabled={isFetching || justPressed}
         onPress={() => {
           console.log('Fetching new question...');
           if (hasPressed) refetch({ cancelRefetch: true });
           setHasPressed(true);
+          setJustPressed(true);
+          setTimeout(() => {
+            setJustPressed(false);
+          }, buttonDelay);
         }}>
-        {isError ? 'Oops! Try again' : 'Get New Question'}
+        {isError ? error.message : 'Get New Question'}
       </Button>
     );
-  }, [hasPressed, isError, isPending, refetch, setHasPressed]);
+  }, [error, hasPressed, justPressed, isError, isFetching, refetch]);
 
-  if (question) {
+  if (question && hasPressed && !isError) {
     return (
       <ThemedView style={viewStyles.view}>
         <ThemedText type="title">{question.prompt}</ThemedText>

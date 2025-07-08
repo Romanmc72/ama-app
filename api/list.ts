@@ -1,12 +1,4 @@
-import {
-  List,
-  ListBase,
-  UserId,
-  Question,
-  QuestionId,
-  UserListId,
-  ListWithQuestions,
-} from '@/shapes';
+import { List, ListBase, UserId, QuestionId, UserListId, ListWithQuestions } from '@/shapes';
 import { hitApi, join } from './base';
 
 /** The path for interacting with one specific list. */
@@ -39,12 +31,15 @@ export async function getQuestionLists(props: UserId): Promise<List[]> {
   return await hitApi({ path: listsPath(props) });
 }
 
+/** The properties required to create a new question list. */
+export type CreateQuestionListProps = UserId & ListBase;
+
 /**
  * Creates a new question list for a user.
  * @param props The user and the list properties.
  * @returns the created list.
  */
-export async function createQuestionList(props: UserId & ListBase): Promise<List> {
+export async function createQuestionList(props: CreateQuestionListProps): Promise<List> {
   const { userId, ...listProps } = props;
   return await hitApi({ path: listsPath({ userId }), method: 'POST', body: listProps });
 }
@@ -65,8 +60,8 @@ export async function deleteQuestionList(props: UserListId): Promise<void> {
  * @param question The question to add.
  * @returns The new state of the list.
  */
-export async function addQuestionToList(props: UserListId, question: Question): Promise<void> {
-  return await hitApi({ path: listPath(props), method: 'POST', body: question });
+export async function addQuestionToList(props: ListQuestionId): Promise<void> {
+  return await hitApi({ path: listQuestionPath(props), method: 'POST' });
 }
 
 /**

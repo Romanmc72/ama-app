@@ -1,3 +1,4 @@
+import { Href } from 'expo-router';
 /**
  * The available routes to navigate to different pages. Not the same as
  * the API route structure, this is only for the app.
@@ -12,7 +13,7 @@ export type AppRoute = {
    */
   path: string;
   /** The path (includes group modifiers) for router navigation. */
-  routerPath: string;
+  routerPath: Href;
   /** The title of the app route. */
   title: string;
 };
@@ -48,68 +49,73 @@ export const routeTree: RouteTree = {
     },
     passwordLogin: {
       path: 'passwordLogin',
-      routerPath: 'passwordLogin',
+      routerPath: '/passwordLogin',
       title: 'Email Log In',
     },
     selectAuthProvider: {
       path: 'selectAuthProvider',
-      routerPath: 'selectAuthProvider',
+      routerPath: '/selectAuthProvider',
       title: 'Log In',
     },
     signUp: {
       path: 'signUp',
-      routerPath: 'signUp',
+      routerPath: '/signUp',
       title: 'Sign Up',
     },
   },
   LIST: {
     index: {
       path: 'index',
-      routerPath: '(list)/index',
+      routerPath: '/(list)/index',
       title: '',
     },
     createList: {
       path: 'createList',
-      routerPath: '(list)/createList',
+      routerPath: '/(list)/createList',
+      title: 'Create Question List',
+    },
+    list: {
+      path: 'list',
+      routerPath: '/(list)',
       title: 'Create Question List',
     },
   },
   USER: {
     settings: {
       path: 'index',
-      routerPath: '(user)/index',
+      routerPath: '/(user)/index',
       title: '',
     },
     appearanceSettings: {
       path: 'appearanceSettings',
-      routerPath: '(user)/appearanceSettings',
+      routerPath: '/(user)/appearanceSettings',
       title: 'Appearance',
     },
     editAccount: {
       path: 'editAccount',
-      routerPath: '(user)/editAccount',
+      routerPath: '/(user)/editAccount',
       title: 'Manage Account',
     },
     languageSettings: {
       path: 'languageSettings',
-      routerPath: '(user)/languageSettings',
+      routerPath: '/(user)/languageSettings',
       title: 'Language',
     },
     manageSubscription: {
       path: 'manageSubscription',
-      routerPath: '(user)/manageSubscription',
+      routerPath: '/(user)/manageSubscription',
       title: 'Manage Subscription',
     },
   },
   SCREENS: {
     ask: {
       path: 'ask',
-      routerPath: 'ask',
+      routerPath: '/ask',
       title: 'Ask Me Anything',
     },
     find: {
       path: 'find',
-      routerPath: 'find',
+      routerPath: '/find',
       title: 'Find A Question',
     },
   },

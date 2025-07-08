@@ -5,7 +5,7 @@ import { ListId } from './list';
 /** The settings related to how the user accesses the app. */
 export type UserSettings = {
   /** The user's color preferences. */
-  colorScheme: 'default' | ColorScheme;
+  colorScheme: ColorScheme;
 };
 
 /** The properties required to get a user. */
@@ -18,6 +18,12 @@ export interface UserId {
 export type UserBase = {
   /** The user's name. */
   name: string;
+  /** The user's email. */
+  email: string;
+  /**
+   * Whether the subscription is free or paid, and if paid what tier.
+   */
+  tier: 'free' | 'lite' | 'premium';
   /** Their subscription configuration. */
   subscription: Subscription;
   /** Any settings this user has saved. */

@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { useRouter } from 'expo-router';
 import Br from '@/components/Br';
 import Button from '@/components/Button';
@@ -8,6 +9,7 @@ import { ThemedView } from '@/components/ThemedView';
 
 export default function Home(): JSX.Element {
   const router = useRouter();
+
   return (
     <ThemedView style={viewStyles.view}>
       <AMALogo size={150} />
