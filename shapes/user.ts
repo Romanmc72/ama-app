@@ -16,6 +16,8 @@ export interface UserId {
 
 /** The shape of the user's data. */
 export type UserBase = {
+  /** The user's unique identifier from firebase. */
+  firebaseId: string;
   /** The user's name. */
   name: string;
   /** The user's email. */
@@ -29,7 +31,11 @@ export type UserBase = {
   /** Any settings this user has saved. */
   settings: UserSettings;
   /** The lists that this user has created. */
-  lists: ListId[];
+  lists: (ListId & { name: string })[];
 };
 
 export type User = UserBase & UserId;
+
+export type LogInProps = { email: string; password: string } | undefined;
+
+export type UserCreateProps = Omit<UserBase & LogInProps, 'firebaseId'>;

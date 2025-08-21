@@ -1,11 +1,8 @@
 import { JSX, useCallback, useState } from 'react';
-import Br from '@/components/Br';
-import Button from '@/components/Button';
-import { ThemedText } from '@/components/ThemedText';
-import { Waver } from '@/components/Waver';
+import { Br, Button, ThemedText, ThemedView, Waver } from '@/components';
 import { viewStyles } from '@/styles/view';
-import { ThemedView } from '@/components/ThemedView';
 import { useQuestion } from '@/hooks';
+import { useUserContext } from '@/contexts';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
@@ -14,6 +11,7 @@ const buttonDelay = 1000;
 export default function Ask(): JSX.Element {
   const [hasPressed, setHasPressed] = useState(false);
   const [justPressed, setJustPressed] = useState(false);
+  const { idToken } = useUserContext();
   const {
     data: question,
     isError,
@@ -21,6 +19,7 @@ export default function Ask(): JSX.Element {
     error,
     refetch,
   } = useQuestion({
+    idToken: idToken ?? '',
     random: true,
   });
 

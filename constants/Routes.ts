@@ -31,6 +31,11 @@ type RouteTree = {
    * This will contain the splash page and the pages used for logging into the app.
    */
   ROOT: FlatLayout;
+  /**
+   * The nested layout for authentication related routes, such as
+   * logging in, signing up, and selecting an authentication provider.
+   */
+  AUTH: FlatLayout;
   /** The nested layout for managing user lists. */
   LIST: FlatLayout;
   /** The main screens of the app itself. */
@@ -45,39 +50,46 @@ export const routeTree: RouteTree = {
     index: {
       path: '/',
       routerPath: '/',
-      title: 'Get Started',
+      title: 'Get started',
     },
+  },
+  AUTH: {
     passwordLogin: {
       path: 'passwordLogin',
       routerPath: '/passwordLogin',
-      title: 'Email Log In',
+      title: 'Email log in',
     },
     selectAuthProvider: {
       path: 'selectAuthProvider',
       routerPath: '/selectAuthProvider',
-      title: 'Log In',
+      title: 'Log in',
     },
     signUp: {
       path: 'signUp',
       routerPath: '/signUp',
-      title: 'Sign Up',
+      title: 'Sign up',
+    },
+    verifyEmail: {
+      path: 'verifyEmail',
+      routerPath: '/verifyEmail',
+      title: 'Verify email',
     },
   },
   LIST: {
     index: {
       path: 'index',
       routerPath: '/(list)/index',
-      title: '',
+      title: 'Lists',
     },
     createList: {
       path: 'createList',
       routerPath: '/(list)/createList',
-      title: 'Create Question List',
+      title: 'Create question list',
     },
     list: {
       path: 'list',
       routerPath: '/(list)',
-      title: 'Create Question List',
+      title: 'List',
     },
   },
   USER: {
@@ -94,7 +106,7 @@ export const routeTree: RouteTree = {
     editAccount: {
       path: 'editAccount',
       routerPath: '/(user)/editAccount',
-      title: 'Manage Account',
+      title: 'Manage account',
     },
     languageSettings: {
       path: 'languageSettings',
@@ -104,19 +116,19 @@ export const routeTree: RouteTree = {
     manageSubscription: {
       path: 'manageSubscription',
       routerPath: '/(user)/manageSubscription',
-      title: 'Manage Subscription',
+      title: 'Manage subscription',
     },
   },
   SCREENS: {
     ask: {
       path: 'ask',
       routerPath: '/ask',
-      title: 'Ask Me Anything',
+      title: 'Ask me anything',
     },
     find: {
       path: 'find',
       routerPath: '/find',
-      title: 'Find A Question',
+      title: 'Find a question',
     },
   },
 };

@@ -1,4 +1,4 @@
-import { User, UserBase, UserId } from '@/shapes';
+import { AuthorizedApiRequest, User, UserBase, UserId } from '@/shapes';
 import { hitApi, join } from './base';
 
 const path = 'user';
@@ -8,8 +8,10 @@ const path = 'user';
  * @param props The properties required to get a specific user's data.
  * @returns The promise containing the user data fetched.
  */
-export async function getUser(props: UserId): Promise<User> {
-  return await hitApi({ path: join(path, props.userId) });
+export async function getUser({ userId, idToken }: AuthorizedApiRequest<UserId>): Promise<User> {
+  if (!userId || userId === '') throw new Error('userId is required');
+  console.log(`Fetching user with ID: ${userId} and token: ${idToken}`);
+  return await hitApi({ path: join(path, userId), idToken });
 }
 
 /**
@@ -19,8 +21,18 @@ export async function getUser(props: UserId): Promise<User> {
  * @param props The user to update and their updated information.
  * @returns The updated user object.
  */
-export async function updateUser(props: User): Promise<User> {
-  return await hitApi({ path: join(path, props.userId), body: props, method: 'PUT' });
+export async function updateUser({
+  idToken,
+  userId,
+  ...body
+}: AuthorizedApiRequest<User>): Promise<User> {
+  if (!userId || userId === '') throw new Error('userId is required');
+  return await hitApi({
+    path: join(path, userId),
+    body,
+    method: 'PUT',
+    idToken,
+  });
 }
 
 /**
@@ -30,8 +42,16 @@ export async function updateUser(props: User): Promise<User> {
  * @param props The data for the user minus their id.
  * @returns The created user with a user id.
  */
-export async function createUser(props: UserBase): Promise<User> {
-  return await hitApi({ path, body: props, method: 'POST' });
+export async function createUser({
+  idToken,
+  ...body
+}: AuthorizedApiRequest<UserBase>): Promise<User> {
+  return await hitApi({
+    path,
+    body,
+    method: 'POST',
+    idToken,
+  });
 }
 
 /**
@@ -41,6 +61,11 @@ export async function createUser(props: UserBase): Promise<User> {
  * @param props The user id to delete.
  * @returns Nothing.
  */
-export async function deleteUser(props: UserId): Promise<void> {
-  return await hitApi({ path: join(path, props.userId), method: 'DELETE' });
+export async function deleteUser({ userId, idToken }: AuthorizedApiRequest<UserId>): Promise<void> {
+  if (!userId || userId === '') throw new Error('userId is required');
+  return await hitApi({
+    path: join(path, userId),
+    method: 'DELETE',
+    idToken,
+  });
 }

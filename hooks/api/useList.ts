@@ -7,16 +7,16 @@ import {
   getQuestionLists,
   removeQuestionFromList,
 } from '@/api/list';
-import { UserId, UserListId } from '@/shapes';
+import { UserId, UserListId, AuthorizedApiRequest } from '@/shapes';
 
-export function useList(props: UserListId) {
+export function useList(props: AuthorizedApiRequest<UserListId>) {
   return useQuery({
-    queryKey: [`list/${props.listId}`],
+    queryKey: ['lists', props.listId],
     queryFn: () => getQuestionList(props),
   });
 }
 
-export function useLists(props: UserId) {
+export function useLists(props: AuthorizedApiRequest<UserId>) {
   return useQuery({
     queryKey: ['lists'],
     queryFn: () => getQuestionLists(props),
@@ -48,7 +48,7 @@ export function useAddQuestionToList() {
   return useMutation({
     mutationFn: addQuestionToList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [`list/${variables.listId}`] });
+      queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] });
     },
   });
 }
@@ -58,7 +58,7 @@ export function useRemoveQuestionFromList() {
   return useMutation({
     mutationFn: removeQuestionFromList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [`list/${variables.listId}`] });
+      queryClient.invalidateQueries({ queryKey: ['list', variables.listId] });
     },
   });
 }

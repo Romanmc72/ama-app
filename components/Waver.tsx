@@ -7,7 +7,7 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 
-import { ThemedText } from '@/components/ThemedText';
+import ThemedText from './ThemedText';
 
 export interface WaverProps {
   waveAble: string;

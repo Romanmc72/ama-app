@@ -10,7 +10,7 @@ import { useUserContext } from '@/contexts';
 
 export default function ViewList(): JSX.Element {
   const { user } = useUserContext();
-  const { data, isLoading, isError, refetch } = useLists({ userId: user?.userId ?? '' });
+  const { data, isLoading, isError, refetch } = useLists({ userId: user?.userId ?? 'fuck' });
   const [justReloaded, setJustReloaded] = useState(false);
 
   // TODO: Create a component for a list row

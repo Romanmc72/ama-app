@@ -1,4 +1,4 @@
-import { Question, QuestionBase, QuestionId } from '@/shapes';
+import { AuthorizedApiRequest, Question, QuestionBase, QuestionId } from '@/shapes';
 import { convertPropsToQueryParams, hitApi, join } from './base';
 
 const path = 'question';
@@ -20,9 +20,12 @@ export interface FetchQuestionsProps {
  * @param props The properties to grab the question.
  * @returns The fetched question.
  */
-export async function fetchQuestions(props: FetchQuestionsProps): Promise<Question[]> {
+export async function fetchQuestions({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<FetchQuestionsProps>): Promise<Question[]> {
   const params = convertPropsToQueryParams(props);
-  return await hitApi<Question[], undefined>({ params, path });
+  return await hitApi<Question[], undefined>({ params, path, idToken });
 }
 
 /**
@@ -39,13 +42,19 @@ export interface FetchQuestionProps
  * @param props The properties describing the question to fetch.
  * @returns One question
  */
-export async function fetchQuestion(props: FetchQuestionProps): Promise<Question> {
+export async function fetchQuestion({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<FetchQuestionProps>): Promise<Question> {
   if (props.questionId) {
-    return await hitApi<Question, undefined>({ path: [path, props.questionId].join('/') });
+    return await hitApi<Question, undefined>({
+      path: [path, props.questionId].join('/'),
+      idToken,
+    });
   }
   const params = convertPropsToQueryParams(props);
   params.set('limit', '1');
-  const questions = await hitApi<Question[], undefined>({ path, params });
+  const questions = await hitApi<Question[], undefined>({ path, params, idToken });
   if (questions.length) {
     return questions[0];
   }
@@ -57,14 +66,22 @@ export async function fetchQuestion(props: FetchQuestionProps): Promise<Question
  * @param props The question to create.
  * @returns The created question.
  */
-export async function createQuestion(props: QuestionBase): Promise<Question> {
-  return await hitApi<Question, QuestionBase>({ method: 'POST', path, body: props });
+export async function createQuestion({
+  idToken,
+  ...body
+}: AuthorizedApiRequest<QuestionBase>): Promise<Question> {
+  return await hitApi<Question, QuestionBase>({
+    method: 'POST',
+    path,
+    body,
+    idToken,
+  });
 }
 
 /**
  * Deletes a question.
  * @param props The question id to be deleted.
  */
-export async function deleteQuestion(props: QuestionId): Promise<void> {
-  await hitApi({ method: 'DELETE', path: join(path, props.questionId) });
+export async function deleteQuestion(props: AuthorizedApiRequest<QuestionId>): Promise<void> {
+  await hitApi({ method: 'DELETE', path: join(path, props.questionId), idToken: props.idToken });
 }

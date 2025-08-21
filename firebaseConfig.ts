@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
+import { FirebaseOptions, initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { localhost } from './api/base';
 
 // Optionally import the services that you want to use
 // import {...} from "firebase/database";
@@ -8,7 +9,7 @@ import { getAuth, connectAuthEmulator } from 'firebase/auth';
 // import {...} from "firebase/storage";
 
 // Initialize Firebase
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.FIREBASE_API_KEY || 'placeholder',
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || 'placeholder',
   databaseURL: process.env.FIREBASE_DATABASE_URL || 'placeholder',
@@ -23,7 +24,7 @@ export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 if (__DEV__) {
-  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectAuthEmulator(auth, `http://${localhost}:9099`);
 }
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase

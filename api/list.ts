@@ -1,4 +1,12 @@
-import { List, ListBase, UserId, QuestionId, UserListId, ListWithQuestions } from '@/shapes';
+import {
+  AuthorizedApiRequest,
+  List,
+  ListBase,
+  UserId,
+  QuestionId,
+  UserListId,
+  ListWithQuestions,
+} from '@/shapes';
 import { hitApi, join } from './base';
 
 /** The path for interacting with one specific list. */
@@ -18,8 +26,13 @@ const listQuestionPath = (props: ListQuestionId): string =>
  * @param props the properties required to fetch a specific list.
  * @return the list requested.
  */
-export async function getQuestionList(props: UserListId): Promise<ListWithQuestions> {
-  return await hitApi({ path: listPath(props) });
+export async function getQuestionList({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<UserListId>): Promise<ListWithQuestions> {
+  if (!props.userId || props.userId === '' || !props.listId || props.listId === '')
+    throw new Error('Invalid list id / user id provided.');
+  return await hitApi({ path: listPath(props), idToken });
 }
 
 /**
@@ -27,8 +40,11 @@ export async function getQuestionList(props: UserListId): Promise<ListWithQuesti
  * @param props the user to get lists for.
  * @returns the lists they have.
  */
-export async function getQuestionLists(props: UserId): Promise<List[]> {
-  return await hitApi({ path: listsPath(props) });
+export async function getQuestionLists({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<UserId>): Promise<List[]> {
+  return await hitApi({ path: listsPath(props), idToken });
 }
 
 /** The properties required to create a new question list. */
@@ -39,9 +55,12 @@ export type CreateQuestionListProps = UserId & ListBase;
  * @param props The user and the list properties.
  * @returns the created list.
  */
-export async function createQuestionList(props: CreateQuestionListProps): Promise<List> {
-  const { userId, ...listProps } = props;
-  return await hitApi({ path: listsPath({ userId }), method: 'POST', body: listProps });
+export async function createQuestionList({
+  userId,
+  idToken,
+  ...body
+}: AuthorizedApiRequest<CreateQuestionListProps>): Promise<List> {
+  return await hitApi({ path: listsPath({ userId }), method: 'POST', body, idToken });
 }
 
 /**
@@ -50,8 +69,13 @@ export async function createQuestionList(props: CreateQuestionListProps): Promis
  * @returns Nothing, this is safe to rerun as deleting
  * an already deleted list does nothing.
  */
-export async function deleteQuestionList(props: UserListId): Promise<void> {
-  return await hitApi({ path: listPath(props), method: 'DELETE' });
+export async function deleteQuestionList({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<UserListId>): Promise<void> {
+  if (!props.userId || props.userId === '' || !props.listId || props.listId === '')
+    throw new Error('Invalid list id / user id provided.');
+  return await hitApi({ path: listPath(props), method: 'DELETE', idToken });
 }
 
 /**
@@ -60,8 +84,20 @@ export async function deleteQuestionList(props: UserListId): Promise<void> {
  * @param question The question to add.
  * @returns The new state of the list.
  */
-export async function addQuestionToList(props: ListQuestionId): Promise<void> {
-  return await hitApi({ path: listQuestionPath(props), method: 'POST' });
+export async function addQuestionToList({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<ListQuestionId>): Promise<void> {
+  if (
+    !props.userId ||
+    props.userId === '' ||
+    !props.listId ||
+    props.listId === '' ||
+    !props.questionId ||
+    props.questionId === ''
+  )
+    throw new Error('Invalid list id / user id / question id provided.');
+  return await hitApi({ path: listQuestionPath(props), method: 'POST', idToken });
 }
 
 /**
@@ -70,6 +106,18 @@ export async function addQuestionToList(props: ListQuestionId): Promise<void> {
  * @param questionId the question id that needs removing.
  * @returns Nothing.
  */
-export async function removeQuestionFromList(props: ListQuestionId): Promise<void> {
-  return await hitApi({ path: listQuestionPath(props), method: 'DELETE' });
+export async function removeQuestionFromList({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<ListQuestionId>): Promise<void> {
+  if (
+    !props.userId ||
+    props.userId === '' ||
+    !props.listId ||
+    props.listId === '' ||
+    !props.questionId ||
+    props.questionId === ''
+  )
+    throw new Error('Invalid list id / user id / question id provided.');
+  return await hitApi({ path: listQuestionPath(props), method: 'DELETE', idToken });
 }

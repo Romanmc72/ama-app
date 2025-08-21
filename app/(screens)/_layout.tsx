@@ -1,8 +1,16 @@
+import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { routeTree } from '@/constants/Routes';
+import { useUserContext } from '@/contexts';
 
 export default function ScreensLayout() {
+  const { isLoggedIn } = useUserContext();
+
+  if (!isLoggedIn) {
+    return <Redirect href="/index" />;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer>

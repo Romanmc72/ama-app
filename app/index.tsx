@@ -1,27 +1,31 @@
 import { JSX } from 'react';
-import { useRouter } from 'expo-router';
-import Br from '@/components/Br';
-import Button from '@/components/Button';
+import { Redirect, useRouter } from 'expo-router';
 import AMALogo from '@/components/svg/AMALogo';
 import { viewStyles } from '@/styles/view';
 import { routeTree } from '@/constants/Routes';
-import { ThemedView } from '@/components/ThemedView';
+import { Br, Button, ThemedView } from '@/components';
+import { useUserContext } from '@/contexts';
 
 export default function Home(): JSX.Element {
   const router = useRouter();
+  const { isLoggedIn } = useUserContext();
+
+  if (isLoggedIn) {
+    return <Redirect href={routeTree.SCREENS.ask.routerPath} />;
+  }
 
   return (
     <ThemedView style={viewStyles.view}>
       <AMALogo size={150} />
       <Br />
-      <Button onPress={() => router.push(routeTree.ROOT.selectAuthProvider.routerPath)}>
-        Log In
+      <Button onPress={() => router.push(routeTree.AUTH.selectAuthProvider.routerPath)}>
+        Log in
       </Button>
       <Br />
-      <Button onPress={() => router.push(routeTree.ROOT.signUp.routerPath)}>Sign Up</Button>
+      <Button onPress={() => router.push(routeTree.AUTH.signUp.routerPath)}>Sign up</Button>
       <Br />
       <Button onPress={() => router.push(routeTree.SCREENS.ask.routerPath)}>
-        Get Started Anonymously
+        Get started anonymously
       </Button>
     </ThemedView>
   );
