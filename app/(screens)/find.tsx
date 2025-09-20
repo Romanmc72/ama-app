@@ -1,5 +1,6 @@
+import { JSX } from 'react';
 import Button from '@/components/Button';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedView } from '@/components';
 import { routeTree } from '@/constants/Routes';
 import { viewStyles } from '@/styles/view';
 import { useRouter } from 'expo-router';

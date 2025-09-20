@@ -6,7 +6,9 @@ const { expoConfig } = Constants;
 
 export const localhost = expoConfig?.hostUri?.split(':').shift();
 const localDevApi = localhost?.concat(':8088');
-const endpoint = localDevApi ? `http://${localDevApi}` : 'https://yourapi.com';
+// TODO: Update with your actual API endpoint when it launches
+//                                                       'https://ama.r0m4n.com';
+const endpoint = localDevApi ? `http://${localDevApi}` : 'http://localhost:8088';
 
 /** The http methods allowed by the app. */
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';

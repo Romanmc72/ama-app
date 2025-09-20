@@ -24,7 +24,7 @@ export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 if (__DEV__) {
-  connectAuthEmulator(auth, `http://${localhost}:9099`);
+  connectAuthEmulator(auth, `http://${localhost || 'localhost'}:9099`);
 }
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase

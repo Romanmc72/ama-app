@@ -10,10 +10,10 @@ import {
 import { hitApi, join } from './base';
 
 /** The path for interacting with one specific list. */
-const listPath = (ids: UserListId): string => join('users', ids.userId, 'lists', ids.listId);
+const listPath = (ids: UserListId): string => join('user', ids.userId, 'list', ids.listId);
 
 /** The path for interacting with all of a user's lists. */
-const listsPath = (userId: UserId): string => join('users', userId.userId, 'lists');
+const listsPath = (userId: UserId): string => join('user', userId.userId, 'list');
 
 type ListQuestionId = UserListId & QuestionId;
 
