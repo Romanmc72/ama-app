@@ -1,13 +1,18 @@
 import { useUserContext } from '@/contexts';
-import { Redirect, Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { routeTree } from '@/constants/Routes';
+import { useEffect } from 'react';
 
 export default function AuthLayout() {
   const { isLoggedIn } = useUserContext();
+  const router = useRouter();
 
-  if (isLoggedIn) {
-    return <Redirect href={'/ask'} />;
-  }
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log('You are logged in, redirecting from AUTH!');
+      router.replace('/ask');
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <Stack>

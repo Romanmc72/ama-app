@@ -1,6 +1,5 @@
 import { JSX, useState } from 'react';
-import { ThemedInput, ThemedText, ThemedView } from '@/components';
-import { routeTree } from '@/constants/Routes';
+import { Br, ThemedInput, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useList } from '@/hooks/api/useList';
@@ -31,8 +30,9 @@ export default function ListPage(): JSX.Element {
       <ThemedInput value={listName} onChangeText={setListName} placeholder="List name" />
       {data?.questions?.length &&
         data?.questions.map((q) => (
-          <Link key={q.questionId} href={routeTree.ROOT.ask.routerPath}>
-            {q.prompt}
+          <Link key={q.questionId} href={'/ask'}>
+            <Br />
+            <ThemedText>{q.prompt}</ThemedText>
           </Link>
         ))}
     </ThemedView>

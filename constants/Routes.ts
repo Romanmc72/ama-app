@@ -78,44 +78,44 @@ export const routeTree: RouteTree = {
   LIST: {
     index: {
       path: 'index',
-      routerPath: '/(list)/index',
+      routerPath: '/list/index',
       title: 'Lists',
     },
     createList: {
       path: 'createList',
-      routerPath: '/(list)/createList',
+      routerPath: '/list/createList',
       title: 'Create question list',
     },
     list: {
       path: 'list',
-      routerPath: '/(list)',
+      routerPath: '/list',
       title: 'List',
     },
   },
   USER: {
     settings: {
       path: 'index',
-      routerPath: '/(user)/index',
+      routerPath: '/user',
       title: '',
     },
     appearanceSettings: {
       path: 'appearanceSettings',
-      routerPath: '/(user)/appearanceSettings',
+      routerPath: '/user/appearanceSettings',
       title: 'Appearance',
     },
     editAccount: {
       path: 'editAccount',
-      routerPath: '/(user)/editAccount',
+      routerPath: '/user/editAccount',
       title: 'Manage account',
     },
     languageSettings: {
       path: 'languageSettings',
-      routerPath: '/(user)/languageSettings',
+      routerPath: '/user/languageSettings',
       title: 'Language',
     },
     manageSubscription: {
       path: 'manageSubscription',
-      routerPath: '/(user)/manageSubscription',
+      routerPath: '/user/manageSubscription',
       title: 'Manage subscription',
     },
   },

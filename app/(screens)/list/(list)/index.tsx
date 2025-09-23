@@ -16,7 +16,7 @@ export default function ViewList(): JSX.Element {
 
   // TODO: Create a component for a list row
   const ListRow = ({ listName, listId }: { listName: string; listId: string }) => (
-    <Link href={(routeTree.LIST.list.routerPath + '/' + listId) as Href}>
+    <Link href={`/${listId}`}>
       <ThemedText>{listName}</ThemedText>
     </Link>
   );

@@ -1,8 +1,9 @@
-import { JSX, useCallback, useState } from 'react';
+import { JSX, useCallback, useMemo, useState } from 'react';
 import { Br, Button, ThemedText, ThemedView, Waver } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useAddQuestionToList, useQuestion } from '@/hooks';
 import { useUserContext } from '@/contexts';
+import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
@@ -14,6 +15,10 @@ export default function Ask(): JSX.Element {
   const [justPressed, setJustPressed] = useState(false);
   const addQuestion = useAddQuestionToList();
   const { idToken, user } = useUserContext();
+  const likedQuestionListId = useMemo(
+    () => (user?.lists.find((l) => l.listId === LIKED_QUESTION_LIST_ID) || {}).listId,
+    [user],
+  );
   const {
     data: question,
     isError,
@@ -44,14 +49,19 @@ export default function Ask(): JSX.Element {
   }, [error, hasPressed, justPressed, isError, isFetching, refetch]);
 
   const onPressLike = useCallback(() => {
-    if (!question?.questionId || !idToken || !user?.userId || !user.lists?.[0]) return;
+    if (!question?.questionId || !idToken || !user?.userId || !likedQuestionListId) {
+      console.log(
+        `One of the required pieces is not defined Q: ${JSON.stringify(question)} || T: ${idToken} || U: ${JSON.stringify(user)} || L: ${likedQuestionListId}`,
+      );
+      return;
+    }
     addQuestion.mutate({
       idToken: idToken,
       questionId: question?.questionId,
-      listId: user.lists?.[0]?.listId,
+      listId: likedQuestionListId,
       userId: user?.userId,
     });
-  }, [idToken, addQuestion, question?.questionId, user?.userId, user?.lists]);
+  }, [idToken, addQuestion, question, user, likedQuestionListId]);
 
   if (question && hasPressed && !isError) {
     return (

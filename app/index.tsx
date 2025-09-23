@@ -11,7 +11,8 @@ export default function Home(): JSX.Element {
   const { isLoggedIn } = useUserContext();
 
   if (isLoggedIn) {
-    return <Redirect href={routeTree.SCREENS.ask.routerPath} />;
+    console.log('You are logged in, redirecting from INDEX!');
+    return <Redirect href={'/ask'} />;
   }
 
   return (

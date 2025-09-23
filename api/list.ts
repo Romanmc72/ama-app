@@ -19,7 +19,7 @@ type ListQuestionId = UserListId & QuestionId;
 
 /** The path for interacting with all of a user's lists. */
 const listQuestionPath = (props: ListQuestionId): string =>
-  join('users', props.userId, 'lists', props.listId, props.questionId);
+  join('user', props.userId, 'list', props.listId, 'question', props.questionId);
 
 /**
  * Retrieves a specific question list.

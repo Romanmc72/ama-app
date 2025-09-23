@@ -1,15 +1,20 @@
-import { Redirect } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { routeTree } from '@/constants/Routes';
 import { useUserContext } from '@/contexts';
+import { useEffect } from 'react';
 
 export default function ScreensLayout() {
   const { isLoggedIn } = useUserContext();
+  const router = useRouter();
 
-  if (!isLoggedIn) {
-    return <Redirect href="/index" />;
-  }
+  useEffect(() => {
+    if (!isLoggedIn) {
+      console.log('You are NOT logged in, redirecting!');
+      router.replace('/');
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -25,8 +30,8 @@ export default function ScreensLayout() {
             }}
           />
         ))}
-        <Drawer.Screen name="(list)" options={{ title: 'Lists' }} />
-        <Drawer.Screen name="(user)" options={{ title: 'Settings' }} />
+        <Drawer.Screen name="list/(list)" options={{ title: 'Lists' }} />
+        <Drawer.Screen name="user/(user)" options={{ title: 'Settings' }} />
       </Drawer>
     </GestureHandlerRootView>
   );

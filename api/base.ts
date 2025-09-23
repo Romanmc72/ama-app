@@ -51,7 +51,6 @@ export async function hitApi<T, I>(props: HitApiProps<I>): Promise<T> {
   const response = await fetch(uri, {
     method,
     body: JSON.stringify(body),
-    // TODO get the auth header to attach!
     headers: new Headers({
       Authorization: `Bearer ${idToken}`,
       'Content-Type': 'application/json',

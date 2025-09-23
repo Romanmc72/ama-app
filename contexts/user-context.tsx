@@ -2,12 +2,12 @@ import { createContext, useContext, useMemo } from 'react';
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
-  deleteUser,
+  deleteUser as firebaseDeleteUser,
   onAuthStateChanged,
-  reload,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signInAnonymously,
+  signOut,
   User as FirebaseUser,
   ActionCodeSettings,
 } from 'firebase/auth';
@@ -137,6 +137,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
   // Handle user state changes
   const handleAuthStateChanged = useCallback(
     async (fbUser: FirebaseUser | null) => {
+      console.log(`We have another change! ${JSON.stringify(fbUser)}`);
       if (fbUser) {
         setIdToken(await fbUser.getIdToken());
         setUserId(fbUser.uid);
@@ -150,66 +151,85 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
     [initializing],
   );
 
-  useEffect(() => {
-    const subscriber = onAuthStateChanged(auth, handleAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, [handleAuthStateChanged]);
-
   const isLoggedIn = useMemo(() => {
     console.log(`User logged in: ${user}, success=${isSuccess} error=${isError} errorMsg=${error}`);
-    return !!user;
+    return !!user && !isError;
   }, [user, isSuccess, isError, error]);
-  const UserContextValue: UserContextType = useMemo(
+
+  const logIn = useCallback(
+    async (props: LogInProps) => {
+      if (isLoggedIn) {
+        console.error('Already logged in');
+        return;
+      }
+      if (user) {
+        throw new Error('User already logged in');
+      }
+      if (props && props.email.length > 0 && props.password.length > 0) {
+        const credentials = await signInWithEmailAndPassword(auth, props.email, props.password);
+        setUserId(credentials.user.uid);
+        const idToken = await credentials.user.getIdToken(true);
+        setIdToken(idToken);
+        setIsAnonymous(false);
+        console.log('User password logged in successfully');
+      }
+      if (!props) {
+        const credentials = await signInAnonymously(auth);
+        setUserId(credentials.user.uid);
+        const idToken = await credentials.user.getIdToken();
+        setIdToken(idToken);
+        setIsAnonymous(true);
+        console.log('User logged in anonymously');
+      }
+    },
+    [isLoggedIn, user],
+  );
+
+  const logOut = useCallback(() => {
+    setUserId(null);
+    setIdToken(null);
+    signOut(auth);
+  }, []);
+
+  const cancelCreateUser = useCallback(async () => {
+    setQueuedCreateUser(null);
+  }, []);
+
+  const context = useMemo(
     () => ({
       user,
       idToken,
       isLoggedIn,
-      // TODO: Wire up the log in and out functions
-      logOut: () => {
-        setUserId(null);
-        setIdToken(null);
-      },
-      logIn: isLoggedIn
-        ? async () => {
-            console.error('Already logged in');
-          }
-        : async (props: LogInProps) => {
-            if (user) {
-              throw new Error('User already logged in');
-            }
-            if (props && props.email.length > 0 && props.password.length > 0) {
-              const credentials = await signInWithEmailAndPassword(
-                auth,
-                props.email,
-                props.password,
-              );
-              setUserId(credentials.user.uid);
-              const idToken = await credentials.user.getIdToken(true);
-              setIdToken(idToken);
-              setIsAnonymous(false);
-              console.log('User password logged in successfully');
-            }
-            if (!props) {
-              const credentials = await signInAnonymously(auth);
-              setUserId(credentials.user.uid);
-              const idToken = await credentials.user.getIdToken();
-              setIdToken(idToken);
-              setIsAnonymous(true);
-              console.log('User logged in anonymously');
-            }
-          },
+      logIn,
+      logOut,
       createUser,
-      cancelCreateUser: async () => {
-        setQueuedCreateUser(null);
-      },
+      cancelCreateUser,
       deleteUser,
       isAnonymous,
       isEmailVerificationPending,
     }),
-    [createUser, deleteUser, isAnonymous, isEmailVerificationPending, isLoggedIn, idToken, user],
+    [
+      user,
+      idToken,
+      isLoggedIn,
+      logIn,
+      logOut,
+      createUser,
+      cancelCreateUser,
+      deleteUser,
+      isAnonymous,
+      isEmailVerificationPending,
+    ],
   );
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChanged);
+    return unsubscribe; // unsubscribe on unmount
+  }, [handleAuthStateChanged]);
+
   if (initializing) return <></>;
-  return <UserContext.Provider value={UserContextValue}>{children}</UserContext.Provider>;
+
+  return <UserContext.Provider value={context}>{children}</UserContext.Provider>;
 };
 
 export function useUserContext() {
