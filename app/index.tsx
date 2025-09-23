@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import AMALogo from '@/components/svg/AMALogo';
 import { viewStyles } from '@/styles/view';
 import { routeTree } from '@/constants/Routes';
@@ -8,13 +8,7 @@ import { useUserContext } from '@/contexts';
 
 export default function Home(): JSX.Element {
   const router = useRouter();
-  const { isLoggedIn } = useUserContext();
   const { logIn } = useUserContext();
-
-  if (isLoggedIn) {
-    console.log('You are logged in, redirecting from INDEX!');
-    return <Redirect href={'/ask'} />;
-  }
 
   return (
     <ThemedView style={viewStyles.view}>

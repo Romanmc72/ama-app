@@ -1,7 +1,5 @@
 import { JSX, useState } from 'react';
-import { Redirect } from 'expo-router';
 import { Br, Button, ThemedInput, ThemedText, ThemedView } from '@/components';
-import { routeTree } from '@/constants/Routes';
 import { viewStyles } from '@/styles/view';
 import { useUserContext } from '@/contexts';
 
@@ -9,11 +7,7 @@ export default function PasswordLogin(): JSX.Element {
   const [disabled, setDisabled] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { logIn, isLoggedIn } = useUserContext();
-
-  if (isLoggedIn) {
-    return <Redirect href={routeTree.SCREENS.ask.routerPath} />;
-  }
+  const { logIn } = useUserContext();
 
   return (
     <ThemedView style={viewStyles.view}>
