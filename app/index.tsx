@@ -9,6 +9,7 @@ import { useUserContext } from '@/contexts';
 export default function Home(): JSX.Element {
   const router = useRouter();
   const { isLoggedIn } = useUserContext();
+  const { logIn } = useUserContext();
 
   if (isLoggedIn) {
     console.log('You are logged in, redirecting from INDEX!');
@@ -25,7 +26,11 @@ export default function Home(): JSX.Element {
       <Br />
       <Button onPress={() => router.push(routeTree.AUTH.signUp.routerPath)}>Sign up</Button>
       <Br />
-      <Button onPress={() => router.push(routeTree.SCREENS.ask.routerPath)}>
+      <Button
+        onPress={() => {
+          logIn(null);
+          router.push(routeTree.SCREENS.ask.routerPath);
+        }}>
         Get started anonymously
       </Button>
     </ThemedView>

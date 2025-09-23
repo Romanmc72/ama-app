@@ -21,7 +21,7 @@ type UserContextType = {
   user?: User;
   idToken: string | null;
   logOut: () => void;
-  logIn: (props: LogInProps) => Promise<void>;
+  logIn: (props: LogInProps | null) => Promise<void>;
   createUser: (props: UserCreateProps) => Promise<void>;
   cancelCreateUser: () => Promise<void>;
   deleteUser: () => void;
@@ -170,7 +170,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
   }, [user, isSuccess, isError, error]);
 
   const logIn = useCallback(
-    async (props: LogInProps) => {
+    async (props: LogInProps | null) => {
       if (isLoggedIn) {
         console.error('Already logged in');
         return;
@@ -187,6 +187,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         setFbUser(credentials.user);
         console.log('User password logged in successfully');
       }
+      // TODO: Figure out how to handle the anonymous user on the backend...
       if (!props) {
         const credentials = await signInAnonymously(auth);
         setUserId(credentials.user.uid);

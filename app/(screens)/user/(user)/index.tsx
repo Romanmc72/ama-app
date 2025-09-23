@@ -4,7 +4,7 @@ import { routeTree } from '@/constants/Routes';
 import { useUserContext } from '@/contexts';
 import { viewStyles } from '@/styles/view';
 
-export default function Settings(): JSX.Element {
+export default function Settings() {
   const router = useRouter();
   const { user, logOut } = useUserContext();
   return (

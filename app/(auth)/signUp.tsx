@@ -15,7 +15,8 @@ type FormInput = {
   sensitive?: boolean;
 };
 
-export default function SignUp(): JSX.Element {
+// TODO: Get this to work with the user-context provider
+export default function SignUp() {
   const router = useRouter();
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
