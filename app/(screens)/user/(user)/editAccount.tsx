@@ -1,6 +1,4 @@
-import Br from '@/components/Br';
-import Button from '@/components/Button';
-import { ThemedView } from '@/components/ThemedView';
+import { Br, Button, ThemedView } from '@/components';
 import { routeTree } from '@/constants/Routes';
 import { viewStyles } from '@/styles/view';
 import { useRouter } from 'expo-router';

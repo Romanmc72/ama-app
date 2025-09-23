@@ -1,8 +1,5 @@
-import Br from '@/components/Br';
-import Button from '@/components/Button';
 import SideBySideButtons from '@/components/SideBySideButtons';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { Br, Button, ThemedText, ThemedView } from '@/components';
 import { routeTree } from '@/constants/Routes';
 import { viewStyles } from '@/styles/view';
 import { useRouter } from 'expo-router';
