@@ -67,6 +67,7 @@ const UserContext = createContext<UserContextType>(defaultUserContextValue);
 
 export const UserProvider = ({ children }: PropsWithChildren) => {
   const [isAnonymous, setIsAnonymous] = useState<boolean>(defaultUserContextValue.isAnonymous);
+  const [fbUser, setFbUser] = useState<FirebaseUser | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isEmailVerificationPending, setIsEmailVerificationPending] = useState<boolean>(false);
@@ -123,24 +124,36 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
       }
       setIdToken(idToken);
       createUserOnBackend({ ...userCreateBase, idToken });
+      setFbUser(credentials.user);
     },
     [createUserOnBackend],
   );
+
+  const logOut = useCallback(() => {
+    setUserId(null);
+    setIdToken(null);
+    setFbUser(null);
+    signOut(auth);
+  }, []);
+
   const deleteUser = useCallback(() => {
-    if (userId && idToken) {
+    if (userId && idToken && fbUser) {
       deleteUserMutation.mutate({ userId, idToken });
+      firebaseDeleteUser(fbUser);
+      logOut();
       return;
     }
     throw new Error('There is no logged in user to delete');
-  }, [deleteUserMutation, idToken, userId]);
+  }, [deleteUserMutation, fbUser, idToken, logOut, userId]);
 
   // Handle user state changes
   const handleAuthStateChanged = useCallback(
-    async (fbUser: FirebaseUser | null) => {
-      console.log(`We have another change! ${JSON.stringify(fbUser)}`);
-      if (fbUser) {
-        setIdToken(await fbUser.getIdToken());
-        setUserId(fbUser.uid);
+    async (firebaseUser: FirebaseUser | null) => {
+      console.log(`We have another change! ${JSON.stringify(firebaseUser)}`);
+      if (firebaseUser) {
+        setIdToken(await firebaseUser.getIdToken());
+        setUserId(firebaseUser.uid);
+        setFbUser(firebaseUser);
       } else {
         setUserId(null);
         setIdToken(null);
@@ -171,6 +184,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         const idToken = await credentials.user.getIdToken(true);
         setIdToken(idToken);
         setIsAnonymous(false);
+        setFbUser(credentials.user);
         console.log('User password logged in successfully');
       }
       if (!props) {
@@ -179,17 +193,12 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         const idToken = await credentials.user.getIdToken();
         setIdToken(idToken);
         setIsAnonymous(true);
+        setFbUser(credentials.user);
         console.log('User logged in anonymously');
       }
     },
     [isLoggedIn, user],
   );
-
-  const logOut = useCallback(() => {
-    setUserId(null);
-    setIdToken(null);
-    signOut(auth);
-  }, []);
 
   const cancelCreateUser = useCallback(async () => {
     setQueuedCreateUser(null);
