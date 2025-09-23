@@ -4,7 +4,7 @@ import { routeTree } from '@/constants/Routes';
 import { viewStyles } from '@/styles/view';
 import { useRouter } from 'expo-router';
 
-export default function ManageSubscription(): JSX.Element {
+export default function ManageSubscription() {
   const router = useRouter();
   return (
     <ThemedView style={viewStyles.view}>

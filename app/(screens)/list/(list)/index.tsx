@@ -2,8 +2,7 @@ import { JSX, useEffect, useState } from 'react';
 import { Br, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLists } from '@/hooks/api/useList';
-import { Href, Link } from 'expo-router';
-import { routeTree } from '@/constants/Routes';
+import { Link } from 'expo-router';
 import { useUserContext } from '@/contexts';
 
 export default function ViewList(): JSX.Element {
