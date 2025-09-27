@@ -1,7 +1,14 @@
 export { default as Br } from './Br';
 export { default as Button } from './Button';
+export { default as Cancel } from './Cancel';
+export { default as Edit } from './Edit';
+export { default as Like } from './Like';
+export { default as Plus } from './Plus';
+export { default as Row } from './Row';
+export { default as Shuffle } from './Shuffle';
 export { default as SideBySideButtons } from './SideBySideButtons';
 export { default as ThemedInput } from './ThemedInput';
 export { default as ThemedText } from './ThemedText';
 export { default as ThemedView } from './ThemedView';
-export * from './Waver';
+export { default as Trash } from './Trash';
+export { default as Waver } from './Waver';

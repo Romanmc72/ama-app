@@ -1,11 +1,13 @@
-import { JSX, useEffect, useState } from 'react';
-import { Br, ThemedText, ThemedView } from '@/components';
+import { JSX, useCallback, useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { Plus, Row, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLists } from '@/hooks/api/useList';
-import { Link } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { useUserContext } from '@/contexts';
 
 export default function ViewList(): JSX.Element {
+  const router = useRouter();
   const { user, idToken } = useUserContext();
   const { data, isLoading, isError, refetch } = useLists({
     userId: user?.firebaseId ?? '',
@@ -13,12 +15,7 @@ export default function ViewList(): JSX.Element {
   });
   const [justReloaded, setJustReloaded] = useState(false);
 
-  // TODO: Create a component for a list row
-  const ListRow = ({ listName, listId }: { listName: string; listId: string }) => (
-    <Link href={`/list/${listId}`}>
-      <ThemedText>{listName}</ThemedText>
-    </Link>
-  );
+  const onPress = useCallback(() => router.push('/list/createList'), [router]);
 
   useEffect(() => {
     if (!isLoading && isError && !justReloaded) {
@@ -46,14 +43,20 @@ export default function ViewList(): JSX.Element {
     );
   }
   return (
-    <ThemedView key="question-list" style={viewStyles.view}>
-      {data?.length &&
-        data.map((list) => (
-          <ThemedView key={list.listId}>
-            <Br />
-            <ListRow listId={list.listId} listName={list.name} />
-          </ThemedView>
-        ))}
-    </ThemedView>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ThemedView key="question-list" style={viewStyles.view}>
+        <Plus onPress={onPress} />
+        {data?.length &&
+          data.map((list) => (
+            <Row
+              key={list.listId}
+              id={list.listId}
+              href={`/list/${list.listId}`}
+              text={list.name}
+            />
+          ))}
+      </ThemedView>
+    </ScrollView>
   );
 }

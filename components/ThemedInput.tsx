@@ -12,7 +12,7 @@ export default function ThemedInput({
   style,
   type = 'default',
   ...props
-}: ThemedInputProps): JSX.Element {
+}: ThemedInputProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'foreground');
   return (
     <TextInput
@@ -21,6 +21,7 @@ export default function ThemedInput({
         style,
         type === 'default' ? styles.default : undefined,
         type === 'password' ? styles.password : undefined,
+        { borderBlockColor: color },
       ]}
       {...props}
       secureTextEntry={type === 'password'}

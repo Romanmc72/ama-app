@@ -13,7 +13,7 @@ export interface WaverProps {
   waveAble: string;
 }
 
-export function Waver({ waveAble }: WaverProps) {
+export default function Waver({ waveAble }: WaverProps) {
   const rotationAnimation = useSharedValue(0);
 
   rotationAnimation.value = withRepeat(

@@ -7,7 +7,8 @@ import {
   UserListId,
   ListWithQuestions,
 } from '@/shapes';
-import { hitApi, join } from './base';
+import { convertPropsToQueryParams, hitApi, join } from './base';
+import { FetchQuestionsProps } from './question';
 
 /** The path for interacting with one specific list. */
 const listPath = (ids: UserListId): string => join('user', ids.userId, 'list', ids.listId);
@@ -28,11 +29,14 @@ const listQuestionPath = (props: ListQuestionId): string =>
  */
 export async function getQuestionList({
   idToken,
+  userId,
+  listId,
   ...props
-}: AuthorizedApiRequest<UserListId>): Promise<ListWithQuestions> {
-  if (!props.userId || props.userId === '' || !props.listId || props.listId === '')
+}: AuthorizedApiRequest<UserListId & FetchQuestionsProps>): Promise<ListWithQuestions> {
+  if (!userId || userId === '' || !listId || listId === '')
     throw new Error('Invalid list id / user id provided.');
-  return await hitApi({ path: listPath(props), idToken });
+  const params = convertPropsToQueryParams(props);
+  return await hitApi({ params, path: listPath({ userId, listId }), idToken });
 }
 
 /**
@@ -61,6 +65,20 @@ export async function createQuestionList({
   ...body
 }: AuthorizedApiRequest<CreateQuestionListProps>): Promise<List> {
   return await hitApi({ path: listsPath({ userId }), method: 'POST', body, idToken });
+}
+
+/**
+ * Creates a new question list for a user.
+ * @param props The user and the list properties.
+ * @returns the created list.
+ */
+export async function updateQuestionList({
+  userId,
+  listId,
+  idToken,
+  ...body
+}: AuthorizedApiRequest<UserListId & ListBase>): Promise<List> {
+  return await hitApi({ path: listPath({ userId, listId }), method: 'PUT', body, idToken });
 }
 
 /**
