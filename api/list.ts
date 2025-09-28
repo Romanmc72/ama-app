@@ -6,6 +6,7 @@ import {
   QuestionId,
   UserListId,
   ListWithQuestions,
+  Question,
 } from '@/shapes';
 import { convertPropsToQueryParams, hitApi, join } from './base';
 import { FetchQuestionsProps } from './question';
@@ -16,7 +17,7 @@ const listPath = (ids: UserListId): string => join('user', ids.userId, 'list', i
 /** The path for interacting with all of a user's lists. */
 const listsPath = (userId: UserId): string => join('user', userId.userId, 'list');
 
-type ListQuestionId = UserListId & QuestionId;
+export type ListQuestionId = UserListId & QuestionId;
 
 /** The path for interacting with all of a user's lists. */
 const listQuestionPath = (props: ListQuestionId): string =>
@@ -94,6 +95,28 @@ export async function deleteQuestionList({
   if (!props.userId || props.userId === '' || !props.listId || props.listId === '')
     throw new Error('Invalid list id / user id provided.');
   return await hitApi({ path: listPath(props), method: 'DELETE', idToken });
+}
+
+/**
+ * Get a question from a list.
+ * @param props The list to add the question to.
+ * @param question The question to add.
+ * @returns The new state of the list.
+ */
+export async function getQuestionFromList({
+  idToken,
+  ...props
+}: AuthorizedApiRequest<ListQuestionId>): Promise<Question> {
+  if (
+    !props.userId ||
+    props.userId === '' ||
+    !props.listId ||
+    props.listId === '' ||
+    !props.questionId ||
+    props.questionId === ''
+  )
+    throw new Error('Invalid list id / user id / question id provided.');
+  return await hitApi({ path: listQuestionPath(props), idToken });
 }
 
 /**

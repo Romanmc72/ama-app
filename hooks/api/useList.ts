@@ -3,8 +3,10 @@ import {
   addQuestionToList,
   createQuestionList,
   deleteQuestionList,
+  getQuestionFromList,
   getQuestionList,
   getQuestionLists,
+  ListQuestionId,
   removeQuestionFromList,
   updateQuestionList,
 } from '@/api/list';
@@ -54,6 +56,13 @@ export function useDeleteList() {
       queryClient.invalidateQueries({ queryKey: ['lists'] });
       queryClient.cancelQueries({ queryKey: ['lists', variables.listId] });
     },
+  });
+}
+
+export function useListQuestion(props: AuthorizedApiRequest<ListQuestionId>) {
+  return useQuery({
+    queryKey: ['lists', props.listId],
+    queryFn: () => getQuestionFromList(props),
   });
 }
 
