@@ -11,11 +11,5 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": [
-    ".eslintrc.js",
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-  ]
+  "include": [".eslintrc.js", "**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

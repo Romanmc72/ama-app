@@ -1,6 +1,4 @@
-import Trash from '@/components/Trash';
 import Cancel from '@/components/Cancel';
-import Plus from '@/components/Plus';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { Modal, ModalProps } from 'react-native';

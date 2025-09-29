@@ -1,4 +1,5 @@
 import { ColorScheme } from '@/constants/Colors';
+import { LogInProps } from './auth';
 import { Subscription } from './subscription';
 import { ListId } from './list';
 
@@ -35,7 +36,5 @@ export type UserBase = {
 };
 
 export type User = UserBase & UserId;
-
-export type LogInProps = { email: string; password: string } | undefined;
 
 export type UserCreateProps = Omit<UserBase & LogInProps, 'firebaseId'>;

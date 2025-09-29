@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         // Handle error, e.g., show a message to the user
         setIsUserCreatedInAPI(false); // Ensure this is false on error
       },
-    }
+    },
   );
 
   // --- Firebase Auth Actions ---
@@ -228,8 +228,9 @@ export const AuthProvider = ({ children }) => {
           stopEmailVerificationPolling(); // Ensure polling is stopped if already verified
           // If email is verified, check if they exist in custom API
           // This ensures existing verified users also get created in API if not already
-          if (!isUserCreatedInAPI) { // Only try to create if not already created in this session
-              await createUserInApiMutation.mutateAsync(firebaseUser.uid);
+          if (!isUserCreatedInAPI) {
+            // Only try to create if not already created in this session
+            await createUserInApiMutation.mutateAsync(firebaseUser.uid);
           }
         }
       } else {
