@@ -1,8 +1,8 @@
 import { JSX, useCallback, useMemo, useState } from 'react';
 import {
+  AddToListModal,
   Br,
   Button,
-  Cancel,
   Like,
   Plus,
   SideBySideButtons,
@@ -11,10 +11,9 @@ import {
   Waver,
 } from '@/components';
 import { viewStyles } from '@/styles/view';
-import { useAddQuestionToList, useList, useLists, useQuestion } from '@/hooks';
+import { useAddQuestionToList, useList, useQuestion } from '@/hooks';
 import { useUserContext } from '@/contexts';
 import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
-import { Modal } from 'react-native';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
@@ -30,14 +29,6 @@ export default function Ask(): JSX.Element {
   const { idToken, user } = useUserContext();
   const { data: listData, isSuccess: listFetched } = useList({
     listId: LIKED_QUESTION_LIST_ID,
-    userId: user?.userId ?? '',
-    idToken: idToken ?? '',
-  });
-  const {
-    data: lists,
-    isLoading: loadingLists,
-    isError: listLoadingError,
-  } = useLists({
     userId: user?.userId ?? '',
     idToken: idToken ?? '',
   });
@@ -116,29 +107,11 @@ export default function Ask(): JSX.Element {
           <GetQuestionButton />
         </ThemedView>
 
-        <Modal animationType="slide" visible={modalIsVisible}>
-          <ThemedView style={viewStyles.view}>
-            <Cancel onPress={() => setModalIsVisible(!modalIsVisible)} />
-            {loadingLists && <ThemedText>Loading lists...</ThemedText>}
-            {!listLoadingError &&
-              lists &&
-              lists.map((eachList) => (
-                <ThemedView>
-                  <ThemedText>{eachList.name}</ThemedText>
-                  <Plus
-                    onPress={() => {
-                      addQuestion.mutate({
-                        idToken: idToken ?? '',
-                        questionId: question?.questionId,
-                        listId: eachList.listId,
-                        userId: user?.userId ?? '',
-                      });
-                    }}
-                  />
-                </ThemedView>
-              ))}
-          </ThemedView>
-        </Modal>
+        <AddToListModal
+          questionId={question.questionId}
+          visible={modalIsVisible}
+          setVisible={setModalIsVisible}
+        />
       </ThemedView>
     );
   }

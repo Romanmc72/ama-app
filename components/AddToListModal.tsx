@@ -7,25 +7,34 @@ import { Modal, ModalProps } from 'react-native';
 import { viewStyles } from '@/styles/view';
 import { useLists } from '@/hooks';
 import { useUserContext } from '@/contexts';
+import { QuestionId } from '@/shapes';
+import AddToListModalRow from './AddToListModalRow';
 
-export interface AddToListModalProps extends Omit<ModalProps, 'animationType'> {
+/**
+ * The properties required to instantiate the "add to list" modal.
+ */
+export interface AddToListModalProps extends Omit<ModalProps, 'animationType'>, QuestionId {
+  /** Whether or not the modal is visible. */
   visible: boolean;
+  /** The trigger for changing the modal's visibility. */
   setVisible: (visible: boolean) => void;
 }
 
-// TODO Finish this component and its rows
 export default function AddToListModal(props: AddToListModalProps) {
   const { user, idToken } = useUserContext();
-  const { data } = useLists({ userId: user?.userId ?? '', idToken: idToken ?? '' });
+  const { data, isLoading, isSuccess } = useLists({
+    userId: user?.userId ?? '',
+    idToken: idToken ?? '',
+  });
   return (
     <Modal animationType="slide" visible={props.visible}>
       <ThemedView style={viewStyles.view}>
         <Cancel onPress={() => props.setVisible(!props.visible)} />
-        {loadingLists && <ThemedText>Loading lists...</ThemedText>}
-        {!listLoadingError &&
-          lists &&
-          lists.map((eachList) => (
-            
+        {isLoading && <ThemedText>Loading lists...</ThemedText>}
+        {isSuccess &&
+          data &&
+          data.map((list) => (
+            <AddToListModalRow key={list.listId} list={list} questionId={props.questionId} />
           ))}
       </ThemedView>
     </Modal>

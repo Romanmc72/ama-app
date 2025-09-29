@@ -61,8 +61,9 @@ export function useDeleteList() {
 
 export function useListQuestion(props: AuthorizedApiRequest<ListQuestionId>) {
   return useQuery({
-    queryKey: ['lists', props.listId],
+    queryKey: ['lists', props.listId, 'question', props.questionId],
     queryFn: () => getQuestionFromList(props),
+    retry: false,
   });
 }
 
@@ -72,6 +73,9 @@ export function useAddQuestionToList() {
     mutationFn: addQuestionToList,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] });
+      queryClient.invalidateQueries({
+        queryKey: ['lists', variables.listId, 'question', variables.questionId],
+      });
     },
   });
 }
@@ -82,6 +86,9 @@ export function useRemoveQuestionFromList() {
     mutationFn: removeQuestionFromList,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['list', variables.listId] });
+      queryClient.invalidateQueries({
+        queryKey: ['lists', variables.listId, 'question', variables.questionId],
+      });
     },
   });
 }
