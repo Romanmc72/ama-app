@@ -1,11 +1,13 @@
-export { default as AddToListModal } from './AddToListModal';
+export { default as AddToListModalRow } from './AddToListModalRow';
 export { default as Br } from './Br';
 export { default as Button } from './Button';
 export { default as Cancel } from './Cancel';
 export { default as Edit } from './Edit';
+export { default as Left } from './Left';
 export { default as Like } from './Like';
 export { default as Loading } from './Loading';
 export { default as Plus } from './Plus';
+export { default as Right } from './Right';
 export { default as Row } from './Row';
 export { default as Shuffle } from './Shuffle';
 export { default as SideBySideButtons } from './SideBySideButtons';

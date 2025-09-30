@@ -28,6 +28,13 @@ export default function RootLayout() {
             ))}
             <Stack.Screen name="(screens)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ title: 'Getting started' }} />
+            <Stack.Screen
+              name="[questionId]/index"
+              options={{
+                title: 'Add to list',
+                presentation: 'modal',
+              }}
+            />
           </Stack>
         </ThemeProvider>
       </UserProvider>

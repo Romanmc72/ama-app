@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Br, Button, ThemedText, ThemedView } from '@/components';
+import { Br, Button, Shuffle, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useList } from '@/hooks/api/useList';
@@ -27,7 +27,7 @@ export default function ShuffleListPage() {
 
   const GetQuestionButton = useCallback(() => {
     return (
-      <Button
+      <Shuffle
         disabled={isFetching || justPressed}
         onPress={() => {
           console.log('Fetching new question...');
@@ -36,11 +36,10 @@ export default function ShuffleListPage() {
           setTimeout(() => {
             setJustPressed(false);
           }, buttonDelay);
-        }}>
-        {isError ? 'Try Again' : isFetching || justPressed ? 'Loading' : 'Get New Question'}
-      </Button>
+        }}
+      />
     );
-  }, [justPressed, isError, isFetching, refetch]);
+  }, [justPressed, isFetching, refetch]);
 
   if (isError) {
     return (

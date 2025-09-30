@@ -1,0 +1,28 @@
+import Cancel from '@/components/Cancel';
+import { AddToListModalRow, ThemedText, ThemedView } from '@/components';
+import { viewStyles } from '@/styles/view';
+import { useLists } from '@/hooks';
+import { useUserContext } from '@/contexts';
+import { QuestionId } from '@/shapes';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+
+export default function AddToListModal() {
+  const { questionId }: QuestionId = useLocalSearchParams();
+  const router = useRouter();
+  const { user, idToken } = useUserContext();
+  const { data, isLoading, isSuccess } = useLists({
+    userId: user?.userId ?? '',
+    idToken: idToken ?? '',
+  });
+  return (
+    <ThemedView style={viewStyles.view}>
+      <Cancel onPress={() => router.back()} />
+      {isLoading && <ThemedText>Loading lists...</ThemedText>}
+      {isSuccess &&
+        data &&
+        data.map((list) => (
+          <AddToListModalRow key={list.listId} list={list} questionId={questionId} />
+        ))}
+    </ThemedView>
+  );
+}

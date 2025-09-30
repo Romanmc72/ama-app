@@ -1,10 +1,11 @@
-import { JSX, useCallback, useMemo, useState } from 'react';
+import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  AddToListModal,
   Br,
-  Button,
+  Left,
   Like,
   Plus,
+  Right,
+  Shuffle,
   SideBySideButtons,
   ThemedText,
   ThemedView,
@@ -14,6 +15,7 @@ import { viewStyles } from '@/styles/view';
 import { useAddQuestionToList, useList, useQuestion } from '@/hooks';
 import { useUserContext } from '@/contexts';
 import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
+import { useRouter } from 'expo-router';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
@@ -21,10 +23,14 @@ const buttonDelay = 1000;
 
 // TODO: add like button and modal to save to a specific list
 export default function Ask(): JSX.Element {
+  const [visitedQuestions, setVisitedQuestions] = useState<string[]>([]);
+  const [questionId, setQuestionId] = useState<string | undefined>(undefined);
+  const [finalId, setFinalId] = useState<string | undefined>(undefined);
+  const [random, setRandom] = useState(true);
   const [hasPressed, setHasPressed] = useState(false);
   const [justPressed, setJustPressed] = useState(false);
-  const [modalIsVisible, setModalIsVisible] = useState(false);
   const [liked, setLiked] = useState(false);
+  const router = useRouter();
   const addQuestion = useAddQuestionToList();
   const { idToken, user } = useUserContext();
   const { data: listData, isSuccess: listFetched } = useList({
@@ -37,11 +43,12 @@ export default function Ask(): JSX.Element {
     isSuccess: questionFetched,
     isError,
     isFetching,
-    error,
     refetch,
   } = useQuestion({
     idToken: idToken ?? '',
-    random: true,
+    questionId,
+    finalId,
+    random,
   });
   const alreadyLiked = useMemo(() => {
     return (
@@ -53,22 +60,27 @@ export default function Ask(): JSX.Element {
 
   const GetQuestionButton = useCallback(() => {
     return (
-      <Button
+      <Shuffle
         disabled={isFetching || justPressed}
         onPress={() => {
           console.log('Fetching new question...');
           if (hasPressed) refetch({ cancelRefetch: true });
+          setQuestionId(undefined);
+          setFinalId(undefined);
+          setRandom(true);
           setHasPressed(true);
           setJustPressed(true);
           setLiked(false);
           setTimeout(() => {
             setJustPressed(false);
           }, buttonDelay);
-        }}>
-        {isError ? error.message : 'Get New Question'}
-      </Button>
+          if (question?.questionId) {
+            setVisitedQuestions([...visitedQuestions, question.questionId]);
+          }
+        }}
+      />
     );
-  }, [error, hasPressed, justPressed, isError, isFetching, refetch]);
+  }, [hasPressed, justPressed, isFetching, refetch, question, visitedQuestions]);
 
   const onPressLike = useCallback(() => {
     if (!question?.questionId || !idToken || !user?.userId) {
@@ -98,20 +110,44 @@ export default function Ask(): JSX.Element {
           <SideBySideButtons
             buttons={[
               <Like onPress={onPressLike} disabled={alreadyLiked || liked} />,
-              <Plus onPress={() => setModalIsVisible(!modalIsVisible)} />,
+              <Plus onPress={() => router.push(`/${question.questionId}`)} />,
             ]}
           />
         </ThemedView>
         <Br />
         <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
-          <GetQuestionButton />
+          <SideBySideButtons
+            buttons={[
+              <Left
+                disabled={visitedQuestions.length === 0 || isFetching || justPressed}
+                onPress={() => {
+                  setRandom(false);
+                  const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
+                  setQuestionId(lastQuestionId);
+                  setFinalId(undefined);
+                  setVisitedQuestions(visitedQuestions.slice(0, -1));
+                  setTimeout(() => {
+                    setJustPressed(false);
+                  }, buttonDelay);
+                }}
+              />,
+              <GetQuestionButton />,
+              <Right
+                disabled={visitedQuestions.length === 0 || isFetching || justPressed}
+                onPress={() => {
+                  setRandom(false);
+                  const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
+                  setQuestionId(undefined);
+                  setFinalId(lastQuestionId);
+                  setVisitedQuestions([...visitedQuestions, question.questionId]);
+                  setTimeout(() => {
+                    setJustPressed(false);
+                  }, buttonDelay);
+                }}
+              />,
+            ]}
+          />
         </ThemedView>
-
-        <AddToListModal
-          questionId={question.questionId}
-          visible={modalIsVisible}
-          setVisible={setModalIsVisible}
-        />
       </ThemedView>
     );
   }
@@ -125,7 +161,13 @@ export default function Ask(): JSX.Element {
       </ThemedView>
       <Br />
       <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
-        <GetQuestionButton />
+        <SideBySideButtons
+          buttons={[
+            <Left disabled={true} onPress={() => {}} />,
+            <GetQuestionButton />,
+            <Right disabled={true} onPress={() => {}} />,
+          ]}
+        />
       </ThemedView>
     </ThemedView>
   );
