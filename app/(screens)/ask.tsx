@@ -3,6 +3,7 @@ import {
   Br,
   Left,
   Like,
+  Loading,
   Plus,
   Right,
   Shuffle,
@@ -38,18 +39,22 @@ export default function Ask(): JSX.Element {
     userId: user?.userId ?? '',
     idToken: idToken ?? '',
   });
+  const queryProps = useMemo(
+    () => ({
+      idToken: idToken ?? '',
+      questionId,
+      finalId,
+      random,
+    }),
+    [idToken, questionId, finalId, random],
+  );
   const {
     data: question,
     isSuccess: questionFetched,
     isError,
     isFetching,
     refetch,
-  } = useQuestion({
-    idToken: idToken ?? '',
-    questionId,
-    finalId,
-    random,
-  });
+  } = useQuestion(queryProps);
   const alreadyLiked = useMemo(() => {
     return (
       listFetched &&
@@ -64,7 +69,6 @@ export default function Ask(): JSX.Element {
         disabled={isFetching || justPressed}
         onPress={() => {
           console.log('Fetching new question...');
-          if (hasPressed) refetch({ cancelRefetch: true });
           setQuestionId(undefined);
           setFinalId(undefined);
           setRandom(true);
@@ -75,12 +79,60 @@ export default function Ask(): JSX.Element {
             setJustPressed(false);
           }, buttonDelay);
           if (question?.questionId) {
-            setVisitedQuestions([...visitedQuestions, question.questionId]);
+            setVisitedQuestions((prev) => [...prev, question.questionId]);
           }
+          if (hasPressed) refetch({ cancelRefetch: true });
         }}
       />
     );
-  }, [hasPressed, justPressed, isFetching, refetch, question, visitedQuestions]);
+  }, [hasPressed, justPressed, isFetching, refetch, question]);
+
+  const NextQuestionButton = useCallback(
+    () => (
+      <Right
+        disabled={visitedQuestions.length === 0 || isFetching || justPressed || !question}
+        onPress={
+          question && visitedQuestions.length > 0
+            ? () => {
+                console.log('RIGHT!');
+                setRandom(false);
+                setQuestionId(undefined);
+                setFinalId(question.questionId);
+                setVisitedQuestions((prev) => [...prev, question.questionId]);
+                setTimeout(() => {
+                  setJustPressed(false);
+                }, buttonDelay);
+              }
+            : () => {}
+        }
+      />
+    ),
+    [justPressed, visitedQuestions, question, isFetching],
+  );
+
+  const PreviousQuestionButton = useCallback(
+    () => (
+      <Left
+        disabled={visitedQuestions.length === 0 || isFetching || justPressed}
+        onPress={
+          visitedQuestions.length > 0
+            ? () => {
+                console.log('LEFT!');
+                setRandom(false);
+                const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
+                setQuestionId(lastQuestionId);
+                setFinalId(undefined);
+                setVisitedQuestions((prev) => prev.slice(0, -1));
+                setTimeout(() => {
+                  setJustPressed(false);
+                }, buttonDelay);
+              }
+            : () => {}
+        }
+      />
+    ),
+    [visitedQuestions, justPressed, isFetching],
+  );
 
   const onPressLike = useCallback(() => {
     if (!question?.questionId || !idToken || !user?.userId) {
@@ -117,35 +169,7 @@ export default function Ask(): JSX.Element {
         <Br />
         <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
           <SideBySideButtons
-            buttons={[
-              <Left
-                disabled={visitedQuestions.length === 0 || isFetching || justPressed}
-                onPress={() => {
-                  setRandom(false);
-                  const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
-                  setQuestionId(lastQuestionId);
-                  setFinalId(undefined);
-                  setVisitedQuestions(visitedQuestions.slice(0, -1));
-                  setTimeout(() => {
-                    setJustPressed(false);
-                  }, buttonDelay);
-                }}
-              />,
-              <GetQuestionButton />,
-              <Right
-                disabled={visitedQuestions.length === 0 || isFetching || justPressed}
-                onPress={() => {
-                  setRandom(false);
-                  const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
-                  setQuestionId(undefined);
-                  setFinalId(lastQuestionId);
-                  setVisitedQuestions([...visitedQuestions, question.questionId]);
-                  setTimeout(() => {
-                    setJustPressed(false);
-                  }, buttonDelay);
-                }}
-              />,
-            ]}
+            buttons={[<PreviousQuestionButton />, <GetQuestionButton />, <NextQuestionButton />]}
           />
         </ThemedView>
       </ThemedView>
@@ -155,18 +179,18 @@ export default function Ask(): JSX.Element {
   return (
     <ThemedView style={viewStyles.view}>
       <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
-        <ThemedText type="title">Grab a new Question!</ThemedText>
+        {isFetching && hasPressed ? (
+          <Loading />
+        ) : (
+          <ThemedText type="title">Grab a new Question!</ThemedText>
+        )}
         <Br />
         {hasPressed ? null : <Waver waveAble={'👇'} />}
       </ThemedView>
       <Br />
       <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
         <SideBySideButtons
-          buttons={[
-            <Left disabled={true} onPress={() => {}} />,
-            <GetQuestionButton />,
-            <Right disabled={true} onPress={() => {}} />,
-          ]}
+          buttons={[<PreviousQuestionButton />, <GetQuestionButton />, <NextQuestionButton />]}
         />
       </ThemedView>
     </ThemedView>

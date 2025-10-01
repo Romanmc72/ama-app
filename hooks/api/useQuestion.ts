@@ -7,7 +7,13 @@ import { AuthorizedApiRequest } from '@/shapes';
  */
 export function useQuestion(props: AuthorizedApiRequest<FetchQuestionProps>) {
   return useQuery({
-    queryKey: ['question'],
+    queryKey: [
+      'question',
+      props.questionId ?? '',
+      props.finalId ?? '',
+      props.random ?? false,
+      ...(props.tags ?? []),
+    ],
     queryFn: () => fetchQuestion(props),
   });
 }
