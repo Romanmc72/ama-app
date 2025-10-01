@@ -9,7 +9,7 @@ import {
   Question,
 } from '@/shapes';
 import { convertPropsToQueryParams, hitApi, join } from './base';
-import { FetchQuestionsProps } from './question';
+import { FetchQuestionProps, FetchQuestionsProps } from './question';
 
 /** The path for interacting with one specific list. */
 const listPath = (ids: UserListId): string => join('user', ids.userId, 'list', ids.listId);
@@ -105,18 +105,25 @@ export async function deleteQuestionList({
  */
 export async function getQuestionFromList({
   idToken,
+  userId,
+  listId,
+  questionId,
   ...props
-}: AuthorizedApiRequest<ListQuestionId>): Promise<Question> {
-  if (
-    !props.userId ||
-    props.userId === '' ||
-    !props.listId ||
-    props.listId === '' ||
-    !props.questionId ||
-    props.questionId === ''
-  )
-    throw new Error('Invalid list id / user id / question id provided.');
-  return await hitApi({ path: listQuestionPath(props), idToken });
+}: AuthorizedApiRequest<UserListId & FetchQuestionProps>): Promise<Question> {
+  if (!userId || userId === '' || !listId || listId === '')
+    throw new Error('Invalid list id / user id provided.');
+  if (questionId) {
+    return await hitApi({ path: listQuestionPath({ userId, listId, questionId }), idToken });
+  }
+  const listWithQuestions = await hitApi<ListWithQuestions, undefined>({
+    path: listPath({ listId, userId }),
+    params: convertPropsToQueryParams({
+      ...props,
+      limit: 1,
+    }),
+    idToken,
+  });
+  return listWithQuestions.questions[0];
 }
 
 /**

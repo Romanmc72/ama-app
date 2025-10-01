@@ -68,7 +68,6 @@ export default function Ask(): JSX.Element {
       <Shuffle
         disabled={isFetching || justPressed}
         onPress={() => {
-          console.log('Fetching new question...');
           setQuestionId(undefined);
           setFinalId(undefined);
           setRandom(true);
@@ -94,7 +93,6 @@ export default function Ask(): JSX.Element {
         onPress={
           question && visitedQuestions.length > 0
             ? () => {
-                console.log('RIGHT!');
                 setRandom(false);
                 setQuestionId(undefined);
                 setFinalId(question.questionId);
@@ -117,7 +115,6 @@ export default function Ask(): JSX.Element {
         onPress={
           visitedQuestions.length > 0
             ? () => {
-                console.log('LEFT!');
                 setRandom(false);
                 const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
                 setQuestionId(lastQuestionId);

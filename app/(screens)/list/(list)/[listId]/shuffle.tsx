@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Br, Button, Shuffle, ThemedText, ThemedView } from '@/components';
+import { Br, Shuffle, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useList } from '@/hooks/api/useList';
