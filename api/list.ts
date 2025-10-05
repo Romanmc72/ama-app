@@ -115,7 +115,7 @@ export async function getQuestionFromList({
   if (questionId) {
     return await hitApi({ path: listQuestionPath({ userId, listId, questionId }), idToken });
   }
-  const listWithQuestions = await hitApi<ListWithQuestions, undefined>({
+  const { questions } = await hitApi<ListWithQuestions, undefined>({
     path: listPath({ listId, userId }),
     params: convertPropsToQueryParams({
       ...props,
@@ -123,7 +123,10 @@ export async function getQuestionFromList({
     }),
     idToken,
   });
-  return listWithQuestions.questions[0];
+  if (questions.length) {
+    return questions[0];
+  }
+  throw new Error('No questions found in the list');
 }
 
 /**

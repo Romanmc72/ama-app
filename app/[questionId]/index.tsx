@@ -6,6 +6,8 @@ import { useUserContext } from '@/contexts';
 import { QuestionId } from '@/shapes';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
+// TODO: When the user removes from the liked questions list, clear the
+// cache on the main ask page so that the thumbs up re-highlights
 export default function AddToListModal() {
   const { questionId }: QuestionId = useLocalSearchParams();
   const router = useRouter();

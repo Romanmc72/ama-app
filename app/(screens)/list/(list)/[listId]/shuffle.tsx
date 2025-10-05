@@ -7,6 +7,7 @@ import { useUserContext } from '@/contexts';
 
 const buttonDelay = 1000;
 
+// TODO: Make the shuffling page generic and reuse it between here and the ask page
 export default function ShuffleListPage() {
   const [justPressed, setJustPressed] = useState(false);
   const { listId }: { listId: string } = useLocalSearchParams();

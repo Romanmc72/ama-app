@@ -1,7 +1,7 @@
 import { COMMON_COLORS } from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
-import { useState } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleProp, StyleSheet, TextStyle, useColorScheme } from 'react-native';
 
 export interface LoadingProps {
   /**
@@ -10,9 +10,10 @@ export interface LoadingProps {
    * @default false
    */
   disabled?: boolean;
+  style: StyleProp<TextStyle>;
 }
 
-export default function Loading(props: LoadingProps) {
+function StaticLoadingIcon(props: LoadingProps) {
   const [focused, setFocus] = useState(false);
   const focus = () => setFocus(true);
   const unFocus = () => setFocus(false);
@@ -42,7 +43,34 @@ export default function Loading(props: LoadingProps) {
       onBlur={unFocus}
       onPressOut={unFocus}
       onHoverOut={unFocus}
-      style={[styles.button, props.disabled && { opacity: 0.5 }]}
+      style={[styles.button, props.disabled && { opacity: 0.5 }, props.style]}
     />
   );
+}
+
+const AnimatedIcon = Animated.createAnimatedComponent(StaticLoadingIcon);
+
+export default function Loading() {
+  // 1. Create a ref for the animated value
+  const rotationAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // 2. Create a continuous loop
+    Animated.loop(
+      Animated.timing(rotationAnim, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.linear,
+        useNativeDriver: true, // Important for performance
+      }),
+    ).start();
+  }, [rotationAnim]);
+
+  // 3. Map the animated value to a rotation string
+  const rotation = rotationAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  return <AnimatedIcon style={{ transform: [{ rotate: rotation }] }} />;
 }

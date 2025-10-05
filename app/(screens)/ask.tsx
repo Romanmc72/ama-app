@@ -1,6 +1,7 @@
-import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { JSX, useCallback, useMemo, useState } from 'react';
 import {
   Br,
+  Filter,
   Left,
   Like,
   Loading,
@@ -8,13 +9,14 @@ import {
   Right,
   Shuffle,
   SideBySideButtons,
+  Tag,
   ThemedText,
   ThemedView,
   Waver,
 } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useAddQuestionToList, useList, useQuestion } from '@/hooks';
-import { useUserContext } from '@/contexts';
+import { useFilterContext, useUserContext } from '@/contexts';
 import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
 import { useRouter } from 'expo-router';
 
@@ -22,7 +24,7 @@ export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
 const buttonDelay = 1000;
 
-// TODO: add like button and modal to save to a specific list
+// TODO: add tag filtering
 export default function Ask(): JSX.Element {
   const [visitedQuestions, setVisitedQuestions] = useState<string[]>([]);
   const [questionId, setQuestionId] = useState<string | undefined>(undefined);
@@ -34,6 +36,7 @@ export default function Ask(): JSX.Element {
   const router = useRouter();
   const addQuestion = useAddQuestionToList();
   const { idToken, user } = useUserContext();
+  const { tags } = useFilterContext();
   const { data: listData, isSuccess: listFetched } = useList({
     listId: LIKED_QUESTION_LIST_ID,
     userId: user?.userId ?? '',
@@ -45,8 +48,9 @@ export default function Ask(): JSX.Element {
       questionId,
       finalId,
       random,
+      tags,
     }),
-    [idToken, questionId, finalId, random],
+    [idToken, questionId, finalId, random, tags],
   );
   const {
     data: question,
@@ -96,6 +100,7 @@ export default function Ask(): JSX.Element {
                 setRandom(false);
                 setQuestionId(undefined);
                 setFinalId(question.questionId);
+                setLiked(false);
                 setVisitedQuestions((prev) => [...prev, question.questionId]);
                 setTimeout(() => {
                   setJustPressed(false);
@@ -119,6 +124,7 @@ export default function Ask(): JSX.Element {
                 const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
                 setQuestionId(lastQuestionId);
                 setFinalId(undefined);
+                setLiked(false);
                 setVisitedQuestions((prev) => prev.slice(0, -1));
                 setTimeout(() => {
                   setJustPressed(false);
@@ -156,9 +162,13 @@ export default function Ask(): JSX.Element {
       <ThemedView style={viewStyles.view}>
         <ThemedView style={{ ...viewStyles.view, width: '80%', minHeight: 'auto', flex: 1 }}>
           <ThemedText type="title">{question.prompt}</ThemedText>
+          {question.tags.map((tag) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
           <SideBySideButtons
             buttons={[
               <Like onPress={onPressLike} disabled={alreadyLiked || liked} />,
+              <Filter onPress={() => router.push('/filter')} />,
               <Plus onPress={() => router.push(`/${question.questionId}`)} />,
             ]}
           />

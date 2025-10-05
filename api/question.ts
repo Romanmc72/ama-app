@@ -1,4 +1,4 @@
-import { AuthorizedApiRequest, Question, QuestionBase, QuestionId } from '@/shapes';
+import { AuthorizedApiRequest, Question, QuestionBase, QuestionId, QuestionTagKey } from '@/shapes';
 import { convertPropsToQueryParams, hitApi, join } from './base';
 
 const path = 'question';
@@ -10,7 +10,7 @@ export interface FetchQuestionsProps {
   /** */
   limit?: number;
   /** The tags to find matching questions for. */
-  tags?: string[];
+  tags?: QuestionTagKey[];
   /** Whether or not to fetch random questions. If finalId is provided, this will be ignored. */
   random?: boolean;
 }
