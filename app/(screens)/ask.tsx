@@ -19,12 +19,12 @@ import { useAddQuestionToList, useList, useQuestion } from '@/hooks';
 import { useFilterContext, useUserContext } from '@/contexts';
 import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
 import { useRouter } from 'expo-router';
+import { ScrollView } from 'react-native';
 
 export const ASK_QUESTION_NAME = 'Ask Me Anything';
 /** Wait a little bit before re-enabling the button. */
 const buttonDelay = 1000;
 
-// TODO: add tag filtering
 export default function Ask(): JSX.Element {
   const [visitedQuestions, setVisitedQuestions] = useState<string[]>([]);
   const [questionId, setQuestionId] = useState<string | undefined>(undefined);
@@ -36,7 +36,7 @@ export default function Ask(): JSX.Element {
   const router = useRouter();
   const addQuestion = useAddQuestionToList();
   const { idToken, user } = useUserContext();
-  const { tags } = useFilterContext();
+  const { tags, removeTag } = useFilterContext();
   const { data: listData, isSuccess: listFetched } = useList({
     listId: LIKED_QUESTION_LIST_ID,
     userId: user?.userId ?? '',
@@ -48,7 +48,7 @@ export default function Ask(): JSX.Element {
       questionId,
       finalId,
       random,
-      tags,
+      tags: tags.length > 0 ? tags : undefined,
     }),
     [idToken, questionId, finalId, random, tags],
   );
@@ -116,7 +116,7 @@ export default function Ask(): JSX.Element {
   const PreviousQuestionButton = useCallback(
     () => (
       <Left
-        disabled={visitedQuestions.length === 0 || isFetching || justPressed}
+        disabled={visitedQuestions.length <= 1 || isFetching || justPressed}
         onPress={
           visitedQuestions.length > 0
             ? () => {
@@ -157,45 +157,57 @@ export default function Ask(): JSX.Element {
     setLiked(true);
   }, [alreadyLiked, idToken, addQuestion, question, user, liked]);
 
-  if (question && hasPressed && !isError) {
-    return (
-      <ThemedView style={viewStyles.view}>
-        <ThemedView style={{ ...viewStyles.view, width: '80%', minHeight: 'auto', flex: 1 }}>
-          <ThemedText type="title">{question.prompt}</ThemedText>
-          {question.tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-          <SideBySideButtons
-            buttons={[
-              <Like onPress={onPressLike} disabled={alreadyLiked || liked} />,
-              <Filter onPress={() => router.push('/filter')} />,
-              <Plus onPress={() => router.push(`/${question.questionId}`)} />,
-            ]}
-          />
-        </ThemedView>
-        <Br />
-        <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
-          <SideBySideButtons
-            buttons={[<PreviousQuestionButton />, <GetQuestionButton />, <NextQuestionButton />]}
-          />
-        </ThemedView>
-      </ThemedView>
-    );
-  }
+  const showQuestion = question && hasPressed && !isError;
 
   return (
     <ThemedView style={viewStyles.view}>
-      <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
-        {isFetching && hasPressed ? (
-          <Loading />
-        ) : (
-          <ThemedText type="title">Grab a new Question!</ThemedText>
-        )}
-        <Br />
-        {hasPressed ? null : <Waver waveAble={'👇'} />}
+      <ThemedView style={{ flexDirection: 'row' }}>
+        <ScrollView horizontal={true}>
+          {tags.map((t) => (
+            <Tag key={t} onPress={() => removeTag(t)}>
+              {t}
+            </Tag>
+          ))}
+        </ScrollView>
+        <ThemedView style={{ marginLeft: 'auto' }}>
+          <Filter onPress={() => router.push('/filter')} />
+        </ThemedView>
       </ThemedView>
+      <ScrollView
+        style={{
+          flex: 1,
+          minHeight: '47%',
+          width: showQuestion ? '80%' : '100%',
+        }}>
+        <ThemedView style={viewStyles.view}>
+          {isFetching && hasPressed ? (
+            <Loading />
+          ) : !showQuestion ? (
+            <ThemedText type="title">Grab a new Question!</ThemedText>
+          ) : (
+            <>
+              <ThemedText type="title">{question.prompt}</ThemedText>
+              <SideBySideButtons
+                buttons={[
+                  <Like onPress={onPressLike} disabled={alreadyLiked || liked} />,
+                  <Plus onPress={() => router.push(`/${question.questionId}`)} />,
+                ]}
+              />
+            </>
+          )}
+          <Br />
+          {hasPressed ? null : <Waver waveAble={'👇'} />}
+        </ThemedView>
+      </ScrollView>
       <Br />
-      <ThemedView style={{ ...viewStyles.view, width: '100%', minHeight: 'auto', flex: 1 }}>
+      <ThemedView
+        style={{
+          ...viewStyles.view,
+          justifyContent: 'flex-start',
+          width: '100%',
+          minHeight: 'auto',
+          flex: 1,
+        }}>
         <SideBySideButtons
           buttons={[<PreviousQuestionButton />, <GetQuestionButton />, <NextQuestionButton />]}
         />

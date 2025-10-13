@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import { ARRAY_SEPARATOR } from '@/constants/QueryParams';
 import { IdToken } from '@/shapes';
 
 const { expoConfig } = Constants;
@@ -94,7 +93,7 @@ export function convertPropsToQueryParams(props: QueryParamObject): URLSearchPar
     const [paramName, value] = entry;
     if (value) {
       if (value instanceof Array && value.length) {
-        params.set(paramName, value.join(ARRAY_SEPARATOR));
+        value.forEach((eachValue) => params.append(paramName, eachValue));
       } else if (value instanceof Object) {
         params.set(paramName, btoa(JSON.stringify(value)));
       } else {

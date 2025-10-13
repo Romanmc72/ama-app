@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, useColorScheme } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { COMMON_COLORS } from '@/constants/Colors';
@@ -21,7 +21,11 @@ export interface GenericIconProps {
    * An override color for the icon. Default themes will be used if not provided.
    */
   color?: string;
+  /** Any style overrides */
+  style?: StyleProp<TextStyle>;
 }
+
+export type IconInstanceProps = Pick<GenericIconProps, 'onPress' | 'disabled' | 'style'>;
 
 export default function GenericIcon(props: GenericIconProps) {
   const [focused, setFocus] = useState(false);
@@ -45,14 +49,14 @@ export default function GenericIcon(props: GenericIconProps) {
     <Feather
       name={props.iconName}
       size={30}
-      onPress={props.onPress}
+      onPress={!props.disabled ? props.onPress : undefined}
       onFocus={focus}
       onPressIn={focus}
       onHoverIn={focus}
       onBlur={unFocus}
       onPressOut={unFocus}
       onHoverOut={unFocus}
-      style={[styles.button, props.disabled && { opacity: 0.5 }]}
+      style={[styles.button, props.disabled && { opacity: 0.5 }, props.style]}
     />
   );
 }

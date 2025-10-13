@@ -23,8 +23,14 @@ const FilterContext = createContext<FilterContextType>(defaultFilterContextValue
 export const FilterProvider = ({ children }: PropsWithChildren) => {
   const [tags, setTags] = useState<QuestionTagKey[]>([]);
   const clearTags = () => setTags([]);
-  const addTag = useCallback((tag: QuestionTagKey) => setTags([...tags, tag]), [tags]);
-  const removeTag = useCallback((tag: QuestionTagKey) => setTags([...tags, tag]), [tags]);
+  const addTag = useCallback(
+    (tag: QuestionTagKey) => !tags.includes(tag) && setTags([...tags, tag]),
+    [tags],
+  );
+  const removeTag = useCallback(
+    (tag: QuestionTagKey) => setTags(tags.filter((t) => t !== tag)),
+    [tags],
+  );
   const context = useMemo(() => {
     return {
       tags,

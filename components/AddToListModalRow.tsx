@@ -1,12 +1,10 @@
-import Trash from '@/components/Trash';
-import Plus from '@/components/Plus';
+import { useCallback, useMemo } from 'react';
 import ThemedText from '@/components/ThemedText';
 import ThemedView from '@/components/ThemedView';
 import { List, QuestionId } from '@/shapes';
 import { useAddQuestionToList, useListQuestion, useRemoveQuestionFromList } from '@/hooks';
 import { useUserContext } from '@/contexts';
-import { useCallback, useMemo } from 'react';
-import Loading from './Loading';
+import { Loading, Plus, Trash } from './icons';
 
 /** The properties to render a row in the add to list modal. */
 export interface AddToListModalRowProps extends QuestionId {

@@ -1,4 +1,4 @@
-import Cancel from '@/components/Cancel';
+import { Cancel } from '@/components';
 import { AddToListModalRow, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLists } from '@/hooks';

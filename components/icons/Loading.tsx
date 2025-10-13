@@ -30,7 +30,6 @@ function StaticLoadingIcon(props: LoadingProps) {
       borderRadius: 4,
       elevation: 3,
       color,
-      // outlineColor: color,
     },
   });
   return (
