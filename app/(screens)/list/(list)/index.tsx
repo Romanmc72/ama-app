@@ -46,16 +46,20 @@ export default function ViewList(): JSX.Element {
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <ThemedView key="question-list" style={viewStyles.view}>
-        <Plus onPress={onPress} />
-        {data?.length &&
-          data.map((list) => (
-            <Row
-              key={list.listId}
-              id={list.listId}
-              href={`/list/${list.listId}`}
-              text={list.name}
-            />
-          ))}
+        <ThemedView style={{ flex: 1, marginRight: '90%' }}>
+          <Plus onPress={onPress} />
+        </ThemedView>
+        <ThemedView style={{ flex: 1, minHeight: '90%' }}>
+          {data?.length &&
+            data.map((list) => (
+              <Row
+                key={list.listId}
+                id={list.listId}
+                href={`/list/${list.listId}`}
+                text={list.name}
+              />
+            ))}
+        </ThemedView>
       </ThemedView>
     </ScrollView>
   );

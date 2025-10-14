@@ -16,7 +16,11 @@ export default function NestedScreenLayout() {
   return (
     <Stack>
       {Object.values(routeTree.USER).map((route) => (
-        <Stack.Screen key={route.path} name={route.path} options={{ title: route.title }} />
+        <Stack.Screen
+          key={route.path}
+          name={route.path}
+          options={{ title: route.title, headerShown: route.path !== 'index' }}
+        />
       ))}
     </Stack>
   );

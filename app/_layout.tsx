@@ -1,15 +1,25 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LogBox } from 'react-native';
+import { Stack } from 'expo-router';
+
 import { routeTree } from '@/constants/Routes';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
 import { UserProvider, FilterProvider } from '@/contexts';
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  if (__DEV__) {
+    LogBox.ignoreLogs([
+      // We expect a 404 error when looking to see if a question exists in a
+      // list already or not. Ignoring these in dev as the error log box
+      // appears directly over top of some critical UI elements.
+      'API call failed with status: 404 -',
+      'Error response from API: {"error":"Unable to find list question"}',
+    ]);
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

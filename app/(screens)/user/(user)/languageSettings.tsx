@@ -1,14 +1,8 @@
-import Br from '@/components/Br';
-import Button from '@/components/Button';
-import SideBySideButtons from '@/components/SideBySideButtons';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { routeTree } from '@/constants/Routes';
+import { Br, Button, SideBySideButtons, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
 
-export default function LanguageSettings(): JSX.Element {
+export default function LanguageSettings() {
   const router = useRouter();
   return (
     <ThemedView style={viewStyles.view}>
@@ -16,12 +10,8 @@ export default function LanguageSettings(): JSX.Element {
       <Br />
       <SideBySideButtons
         buttons={[
-          <Button onPress={() => router.replace(routeTree.SCREENS.settings.routerPath)}>
-            Save
-          </Button>,
-          <Button onPress={() => router.replace(routeTree.SCREENS.settings.routerPath)}>
-            Cancel
-          </Button>,
+          <Button onPress={() => router.replace('/user')}>Save</Button>,
+          <Button onPress={() => router.replace('/user')}>Cancel</Button>,
         ]}
       />
     </ThemedView>

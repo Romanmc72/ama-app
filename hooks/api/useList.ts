@@ -12,17 +12,20 @@ import {
 } from '@/api/list';
 import { UserId, UserListId, AuthorizedApiRequest } from '@/shapes';
 import { FetchQuestionsProps } from '@/api/question';
+import { questionQueryKey } from './useQuestion';
+
+export const listQueryKey = 'list';
 
 export function useList(props: AuthorizedApiRequest<UserListId & FetchQuestionsProps>) {
   return useQuery({
-    queryKey: ['lists', props.listId],
+    queryKey: [listQueryKey, props.listId],
     queryFn: () => getQuestionList(props),
   });
 }
 
 export function useLists(props: AuthorizedApiRequest<UserId>) {
   return useQuery({
-    queryKey: ['lists'],
+    queryKey: [listQueryKey],
     queryFn: () => getQuestionLists(props),
   });
 }
@@ -32,7 +35,7 @@ export function useCreateList() {
   return useMutation({
     mutationFn: createQuestionList,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
     },
   });
 }
@@ -42,8 +45,8 @@ export function useUpdateList() {
   return useMutation({
     mutationFn: updateQuestionList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] });
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
     },
   });
 }
@@ -53,15 +56,15 @@ export function useDeleteList() {
   return useMutation({
     mutationFn: deleteQuestionList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
-      queryClient.cancelQueries({ queryKey: ['lists', variables.listId] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
+      queryClient.cancelQueries({ queryKey: [listQueryKey, variables.listId] });
     },
   });
 }
 
 export function useListQuestion(props: AuthorizedApiRequest<ListQuestionId>) {
   return useQuery({
-    queryKey: ['lists', props.listId, 'question', props.questionId],
+    queryKey: [listQueryKey, props.listId, questionQueryKey, props.questionId],
     queryFn: () => getQuestionFromList(props),
     retry: false,
   });
@@ -72,9 +75,9 @@ export function useAddQuestionToList() {
   return useMutation({
     mutationFn: addQuestionToList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
       queryClient.invalidateQueries({
-        queryKey: ['lists', variables.listId, 'question', variables.questionId],
+        queryKey: [listQueryKey, variables.listId, questionQueryKey, variables.questionId],
       });
     },
   });
@@ -85,9 +88,9 @@ export function useRemoveQuestionFromList() {
   return useMutation({
     mutationFn: removeQuestionFromList,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['list', variables.listId] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
       queryClient.invalidateQueries({
-        queryKey: ['lists', variables.listId, 'question', variables.questionId],
+        queryKey: [listQueryKey, variables.listId, questionQueryKey, variables.questionId],
       });
     },
   });

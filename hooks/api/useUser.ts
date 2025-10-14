@@ -2,11 +2,13 @@ import { createUser, deleteUser, getUser, updateUser } from '@/api/user';
 import { UserId, AuthorizedApiRequest } from '@/shapes';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+export const userQueryKey = 'user';
+
 // TODO: maybe use the user context to get the userId and idToken or raise errors when that is null (or not provided?)
 
 export function useUser(props: AuthorizedApiRequest<UserId>) {
   return useQuery({
-    queryKey: ['user', props.userId],
+    queryKey: [userQueryKey, props.userId],
     queryFn: () => getUser(props),
   });
 }
@@ -16,7 +18,7 @@ export function useUpdateUser() {
   return useMutation({
     mutationFn: updateUser,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [userQueryKey, variables.userId] });
     },
   });
 }
@@ -32,7 +34,7 @@ export function useDeleteUser() {
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      queryClient.invalidateQueries({ queryKey: [userQueryKey, variables.userId] });
     },
   });
 }

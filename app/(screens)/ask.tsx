@@ -15,7 +15,7 @@ import {
   Waver,
 } from '@/components';
 import { viewStyles } from '@/styles/view';
-import { useAddQuestionToList, useList, useQuestion } from '@/hooks';
+import { useAddQuestionToList, useListQuestion, useQuestion } from '@/hooks';
 import { useFilterContext, useUserContext } from '@/contexts';
 import { LIKED_QUESTION_LIST_ID } from '@/constants/data';
 import { useRouter } from 'expo-router';
@@ -32,16 +32,10 @@ export default function Ask(): JSX.Element {
   const [random, setRandom] = useState(true);
   const [hasPressed, setHasPressed] = useState(false);
   const [justPressed, setJustPressed] = useState(false);
-  const [liked, setLiked] = useState(false);
   const router = useRouter();
   const addQuestion = useAddQuestionToList();
   const { idToken, user } = useUserContext();
   const { tags, removeTag } = useFilterContext();
-  const { data: listData, isSuccess: listFetched } = useList({
-    listId: LIKED_QUESTION_LIST_ID,
-    userId: user?.userId ?? '',
-    idToken: idToken ?? '',
-  });
   const queryProps = useMemo(
     () => ({
       idToken: idToken ?? '',
@@ -52,20 +46,14 @@ export default function Ask(): JSX.Element {
     }),
     [idToken, questionId, finalId, random, tags],
   );
-  const {
-    data: question,
-    isSuccess: questionFetched,
-    isError,
-    isFetching,
-    refetch,
-  } = useQuestion(queryProps);
-  const alreadyLiked = useMemo(() => {
-    return (
-      listFetched &&
-      questionFetched &&
-      listData?.questions?.some((q) => q.questionId === question?.questionId)
-    );
-  }, [listFetched, questionFetched, listData, question]);
+  const { data: question, isError, isFetching, refetch } = useQuestion(queryProps);
+  const { isSuccess: foundInLikedList, isLoading: loadingLikes } = useListQuestion({
+    userId: user?.userId ?? '',
+    idToken: idToken ?? '',
+    questionId: question?.questionId ?? '',
+    listId: LIKED_QUESTION_LIST_ID,
+  });
+  const alreadyLiked = foundInLikedList && !loadingLikes;
 
   const GetQuestionButton = useCallback(() => {
     return (
@@ -77,7 +65,6 @@ export default function Ask(): JSX.Element {
           setRandom(true);
           setHasPressed(true);
           setJustPressed(true);
-          setLiked(false);
           setTimeout(() => {
             setJustPressed(false);
           }, buttonDelay);
@@ -100,7 +87,6 @@ export default function Ask(): JSX.Element {
                 setRandom(false);
                 setQuestionId(undefined);
                 setFinalId(question.questionId);
-                setLiked(false);
                 setVisitedQuestions((prev) => [...prev, question.questionId]);
                 setTimeout(() => {
                   setJustPressed(false);
@@ -124,7 +110,6 @@ export default function Ask(): JSX.Element {
                 const lastQuestionId = visitedQuestions[visitedQuestions.length - 1];
                 setQuestionId(lastQuestionId);
                 setFinalId(undefined);
-                setLiked(false);
                 setVisitedQuestions((prev) => prev.slice(0, -1));
                 setTimeout(() => {
                   setJustPressed(false);
@@ -144,7 +129,7 @@ export default function Ask(): JSX.Element {
       );
       return;
     }
-    if (liked || alreadyLiked) {
+    if (alreadyLiked) {
       console.log(`Question is already liked ID: ${question.questionId}`);
       return;
     }
@@ -154,8 +139,7 @@ export default function Ask(): JSX.Element {
       listId: LIKED_QUESTION_LIST_ID,
       userId: user?.userId,
     });
-    setLiked(true);
-  }, [alreadyLiked, idToken, addQuestion, question, user, liked]);
+  }, [alreadyLiked, idToken, addQuestion, question, user]);
 
   const showQuestion = question && hasPressed && !isError;
 
@@ -189,10 +173,18 @@ export default function Ask(): JSX.Element {
               <ThemedText type="title">{question.prompt}</ThemedText>
               <SideBySideButtons
                 buttons={[
-                  <Like onPress={onPressLike} disabled={alreadyLiked || liked} />,
+                  <Like onPress={onPressLike} disabled={alreadyLiked} />,
                   <Plus onPress={() => router.push(`/${question.questionId}`)} />,
                 ]}
               />
+              {question &&
+                question.tags &&
+                question.tags.length > 0 &&
+                question.tags.map((t) => (
+                  <Tag key={t} onPress={() => {}}>
+                    {t}
+                  </Tag>
+                ))}
             </>
           )}
           <Br />

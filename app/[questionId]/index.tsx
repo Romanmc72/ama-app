@@ -18,13 +18,17 @@ export default function AddToListModal() {
   });
   return (
     <ThemedView style={viewStyles.view}>
-      <Cancel onPress={() => router.back()} />
-      {isLoading && <ThemedText>Loading lists...</ThemedText>}
-      {isSuccess &&
-        data &&
-        data.map((list) => (
-          <AddToListModalRow key={list.listId} list={list} questionId={questionId} />
-        ))}
+      <ThemedView style={{ marginRight: '90%', flex: 1 }}>
+        <Cancel onPress={() => router.back()} />
+      </ThemedView>
+      <ThemedView style={{ flex: 1, minHeight: '90%' }}>
+        {isLoading && <ThemedText>Loading lists...</ThemedText>}
+        {isSuccess &&
+          data &&
+          data.map((list) => (
+            <AddToListModalRow key={list.listId} list={list} questionId={questionId} />
+          ))}
+      </ThemedView>
     </ThemedView>
   );
 }

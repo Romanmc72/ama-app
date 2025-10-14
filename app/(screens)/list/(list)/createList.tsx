@@ -21,7 +21,7 @@ export default function CreateList(): JSX.Element {
       <ThemedText type="title">Name your new list</ThemedText>
       <ThemedInput value={listName} onChangeText={setListName} placeholder="List name" />
       <Br />
-      <Button onPress={handleCreateList} disabled={listName.length === 0}>
+      <Button onPress={handleCreateList} disabled={listName.trim().length === 0}>
         Create List
       </Button>
     </ThemedView>
