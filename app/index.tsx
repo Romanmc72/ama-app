@@ -14,16 +14,14 @@ export default function Home(): JSX.Element {
     <ThemedView style={viewStyles.view}>
       <AMALogo size={150} />
       <Br />
-      <Button onPress={() => router.push(routeTree.AUTH.selectAuthProvider.routerPath)}>
-        Log in
-      </Button>
+      <Button onPress={() => router.push('/logIn')}>Log in</Button>
       <Br />
-      <Button onPress={() => router.push(routeTree.AUTH.signUp.routerPath)}>Sign up</Button>
+      <Button onPress={() => router.push('/signUp')}>Sign up</Button>
       <Br />
       <Button
         onPress={() => {
           logIn(null);
-          router.push(routeTree.SCREENS.ask.routerPath);
+          router.push('/ask');
         }}>
         Get started anonymously
       </Button>

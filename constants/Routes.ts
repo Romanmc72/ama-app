@@ -54,14 +54,9 @@ export const routeTree: RouteTree = {
     },
   },
   AUTH: {
-    passwordLogin: {
-      path: 'passwordLogin',
-      routerPath: '/passwordLogin',
-      title: 'Email log in',
-    },
-    selectAuthProvider: {
-      path: 'selectAuthProvider',
-      routerPath: '/selectAuthProvider',
+    logIn: {
+      path: 'logIn',
+      routerPath: '/logIn',
       title: 'Log in',
     },
     signUp: {

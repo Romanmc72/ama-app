@@ -24,10 +24,18 @@ export default function VerifyEmail() {
     }
   }, [router, isLoggedIn, isEmailVerificationPending]);
 
+  // TODO: Get confirmation email resend working
   return (
     <ThemedView style={viewStyles.view}>
       <ThemedText type="subtitle">Waiting for Email Verification{'.'.repeat(dots % 4)}</ThemedText>
       <Br />
+      <Button
+        onPress={() => {
+          cancelCreateUser();
+          console.log('This has not been implemented yet!');
+        }}>
+        Resend confirmation email
+      </Button>
       <Button
         onPress={() => {
           cancelCreateUser();

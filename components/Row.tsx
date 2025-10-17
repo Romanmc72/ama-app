@@ -1,5 +1,7 @@
 import { Href, Link } from 'expo-router';
-import { Br, ThemedText, ThemedView } from '@/components';
+import Br from './Br';
+import ThemedText from './ThemedText';
+import ThemedView from './ThemedView';
 
 export interface RowProps {
   href: Href;

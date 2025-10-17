@@ -1,27 +1,28 @@
-import { Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacityProps, useColorScheme } from 'react-native';
 import { ThemedTextProps } from './ThemedText';
 import { JSX, useState } from 'react';
 import { COMMON_COLORS } from '@/constants/Colors';
 
 /** The properties required for the clickable text. */
-export type ButtonProps = Omit<ThemedTextProps, 'type'> & {
-  /**
-   * The action to execute when the button is pressed.
-   * @returns nothing
-   */
-  onPress: () => void;
-  /**
-   * The action to execute when the button held.
-   * @returns nothing
-   */
-  onHold?: () => void;
-  /**
-   * Whether or not the button is enabled.
-   *
-   * @default false
-   */
-  disabled?: boolean;
-};
+export type ButtonProps = Omit<ThemedTextProps, 'type' | 'style'> &
+  Pick<TouchableOpacityProps, 'style'> & {
+    /**
+     * The action to execute when the button is pressed.
+     * @returns nothing
+     */
+    onPress: () => void;
+    /**
+     * The action to execute when the button held.
+     * @returns nothing
+     */
+    onHold?: () => void;
+    /**
+     * Whether or not the button is enabled.
+     *
+     * @default false
+     */
+    disabled?: boolean;
+  };
 
 /**
  * Creates a button that looks good and will execute some action when clicked
@@ -67,7 +68,7 @@ export default function Button(props: ButtonProps): JSX.Element {
       aria-label={`${props.children} button`}
       aria-disabled={props.disabled ?? false}
       aria-selected={focused}
-      style={() => [styles.button, props.disabled && { opacity: 0.5 }]}
+      style={[styles.button, props.disabled && { opacity: 0.5 }, props.style]}
       disabled={props.disabled ?? false}
       onPress={props.onPress}
       onFocus={focus}
