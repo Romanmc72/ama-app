@@ -74,12 +74,14 @@ export default function EditListPage() {
         )}
 
         {data?.questions?.length &&
-          data?.questions.map((q) => (
+          data?.questions.map((q, index) => (
             <Row
               key={q.questionId}
               id={q.questionId}
               href={`/list/${listId}/question/${q.questionId}`}
               text={q.prompt.length > 20 ? q.prompt.slice(0, 17) + '...' : q.prompt}
+              index={index}
+              totalItems={data.questions.length}
             />
           ))}
       </ThemedView>

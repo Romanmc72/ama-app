@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
 import { viewStyles } from '@/styles/view';
 import { useUserContext } from '@/contexts';
 import { Br, Button, SideBySideButtons, ThemedInput, ThemedText, ThemedView } from '@/components';
@@ -10,6 +9,7 @@ export default function LogIn() {
   const [loadingDots, setLoadingDots] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { logIn } = useUserContext();
 
   useEffect(() => {
@@ -22,20 +22,39 @@ export default function LogIn() {
       setLoadingDots(loadingDots + '.');
     }, 500);
   }, [disabled, loadingDots]);
+
   return (
     <ThemedView style={viewStyles.view}>
+      {error.length && <ThemedText style={{ color: 'red' }}>{error}</ThemedText>}
       <ThemedText>Email</ThemedText>
-      <ThemedInput value={email} onChangeText={setEmail} />
+      <ThemedInput
+        value={email}
+        onChangeText={(t) => {
+          setEmail(t);
+          setError('');
+        }}
+      />
       <Br />
       <ThemedText>Password</ThemedText>
-      <ThemedInput value={password} onChangeText={setPassword} type="password" />
+      <ThemedInput
+        value={password}
+        onChangeText={(t) => {
+          setPassword(t);
+          setError('');
+        }}
+        type="password"
+      />
       <Br />
       <Button
         style={{ width: '78%' }}
         onPress={async () => {
           setDisabled(true);
-          await logIn({ email, password });
-          setTimeout(() => setDisabled(false), 5_000);
+          try {
+            await logIn({ email, password });
+          } catch (e) {
+            setError('Something went wrong logging in!');
+            setDisabled(false);
+          }
         }}
         disabled={disabled}>
         {disabled ? `Loading${loadingDots}` : 'Sign In'}

@@ -1,9 +1,10 @@
+import { useRouter, Stack } from 'expo-router';
 import { JSX, useCallback, useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
+
 import { Plus, Row, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { useLists } from '@/hooks/api/useList';
-import { useRouter, Stack } from 'expo-router';
 import { useUserContext } from '@/contexts';
 
 export default function ViewList(): JSX.Element {
@@ -43,7 +44,7 @@ export default function ViewList(): JSX.Element {
     );
   }
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView>
       <Stack.Screen options={{ headerShown: false }} />
       <ThemedView key="question-list" style={viewStyles.view}>
         <ThemedView style={{ flex: 1, marginRight: '90%' }}>
@@ -51,12 +52,14 @@ export default function ViewList(): JSX.Element {
         </ThemedView>
         <ThemedView style={{ flex: 1, minHeight: '90%' }}>
           {data?.length &&
-            data.map((list) => (
+            data.map((list, index) => (
               <Row
                 key={list.listId}
                 id={list.listId}
                 href={`/list/${list.listId}`}
                 text={list.name}
+                index={index}
+                totalItems={data.length}
               />
             ))}
         </ThemedView>

@@ -1,6 +1,12 @@
-import { DimensionValue, StyleSheet, TextInput, TextInputProps } from 'react-native';
+import {
+  DimensionValue,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  useColorScheme,
+} from 'react-native';
 import { ThemedProps } from './ThemedView';
-import { useThemeColor } from '@/hooks';
+import { Colors } from '@/constants/Colors';
 
 export interface ThemedInputProps extends Omit<TextInputProps, 'secureTextEntry'>, ThemedProps {
   type?: 'default' | 'password';
@@ -13,7 +19,8 @@ export default function ThemedInput({
   type = 'default',
   ...props
 }: ThemedInputProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'foreground');
+  const scheme = useColorScheme() ?? 'light';
+  const color = Colors[scheme].foreground;
   return (
     <TextInput
       style={[
@@ -21,7 +28,7 @@ export default function ThemedInput({
         style,
         type === 'default' ? styles.default : undefined,
         type === 'password' ? styles.password : undefined,
-        { borderBlockColor: color },
+        { borderColor: color },
       ]}
       {...props}
       secureTextEntry={type === 'password'}
