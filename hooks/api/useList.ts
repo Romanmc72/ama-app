@@ -1,65 +1,67 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   addQuestionToList,
-  createQuestionList,
-  deleteQuestionList,
   getQuestionFromList,
-  getQuestionList,
-  getQuestionLists,
   ListQuestionId,
   removeQuestionFromList,
-  updateQuestionList,
 } from '@/api/list';
-import { UserId, UserListId, AuthorizedApiRequest } from '@/shapes';
-import { FetchQuestionsProps } from '@/api/question';
+import { AuthorizedApiRequest } from '@/shapes';
 import { questionQueryKey } from './useQuestion';
+import { apiClient } from './client';
 
 export const listQueryKey = 'list';
 
-export function useList(props: AuthorizedApiRequest<UserListId & FetchQuestionsProps>) {
-  return useQuery({
-    queryKey: [listQueryKey, props.listId],
-    queryFn: () => getQuestionList(props),
+export function useList(userId: string, listId: string) {
+  return apiClient.useQuery('get', '/user/{userId}/list/{listId}', {
+    params: { path: { userId, listId } },
   });
 }
 
-export function useLists(props: AuthorizedApiRequest<UserId>) {
-  return useQuery({
-    queryKey: [listQueryKey],
-    queryFn: () => getQuestionLists(props),
+export function useLists(userId: string) {
+  return apiClient.useQuery('get', '/user/{userId}/list', {
+    params: { path: { userId } },
   });
 }
 
 export function useCreateList() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createQuestionList,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
+  const m = apiClient.useMutation('post', '/user/{userId}/list', {
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}/list'] });
+      queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
+  return (userId: string, name: string) =>
+    m.mutate({ params: { path: { userId } }, body: { name } });
 }
 
 export function useUpdateList() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateQuestionList,
+  const m = apiClient.useMutation('put', '/user/{userId}/list/{listId}', {
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
-      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
+      queryClient.invalidateQueries({
+        queryKey: ['get', '/user/{userId}/list/{listId}', variables.params.path],
+      });
+      queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}/list'] });
+      queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
+  return (userId: string, listId: string, name: string) =>
+    m.mutate({ params: { path: { userId, listId } }, body: { name } });
 }
 
 export function useDeleteList() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteQuestionList,
+  const m = apiClient.useMutation('delete', '/user/{userId}/list/{listId}', {
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
-      queryClient.cancelQueries({ queryKey: [listQueryKey, variables.listId] });
+      queryClient.invalidateQueries({
+        queryKey: ['get', '/user/{userId}/list/{listId}', variables.params.path],
+      });
+      queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}/list'] });
+      queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
+  return (userId: string, listId: string) => m.mutate({ params: { path: { userId, listId } } });
 }
 
 export function useListQuestion(props: AuthorizedApiRequest<ListQuestionId>) {
