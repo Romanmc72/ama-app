@@ -1,6 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuestion, useRemoveQuestionFromList } from '@/hooks';
-import { useUserContext } from '@/contexts';
 import { Br, ThemedText, ThemedView, Trash } from '@/components';
 import { useList } from '@/hooks/api/useList';
 
@@ -13,9 +12,8 @@ export default function ListQuestionPage() {
     listId: string;
     questionId: string;
   } = useLocalSearchParams();
-  const { idToken, user } = useUserContext();
-  const { data: list } = useList({ userId: user?.userId ?? '', listId, idToken: idToken ?? '' });
-  const { data, isError, isFetching } = useQuestion({ idToken: idToken ?? '', questionId });
+  const { data: list } = useList(listId);
+  const { data, isError, isFetching } = useQuestion({ questionId });
   const removeQuestion = useRemoveQuestionFromList();
   if (isFetching) {
     return <ThemedText>Loading...</ThemedText>;
@@ -25,17 +23,12 @@ export default function ListQuestionPage() {
   }
   return (
     <ThemedView>
-      <Stack.Screen options={{ title: list?.list.name ?? '?' }} />
+      <Stack.Screen options={{ title: list?.list?.name ?? '?' }} />
       <ThemedText type="title">{data?.prompt}</ThemedText>
       <Br />
       <Trash
         onPress={() => {
-          removeQuestion.mutate({
-            idToken: idToken ?? '',
-            userId: user?.userId ?? '',
-            listId,
-            questionId,
-          });
+          removeQuestion(listId, questionId);
           router.back();
         }}
         disabled={false}

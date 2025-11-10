@@ -1,29 +1,31 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  addQuestionToList,
-  getQuestionFromList,
-  ListQuestionId,
-  removeQuestionFromList,
-} from '@/api/list';
-import { AuthorizedApiRequest } from '@/shapes';
-import { questionQueryKey } from './useQuestion';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
+import { getAuth } from 'firebase/auth';
 
-export const listQueryKey = 'list';
+const auth = getAuth();
 
-export function useList(userId: string, listId: string) {
-  return apiClient.useQuery('get', '/user/{userId}/list/{listId}', {
-    params: { path: { userId, listId } },
-  });
+export function useList(listId: string) {
+  const user = auth.currentUser;
+  return apiClient.useQuery(
+    'get',
+    '/user/{userId}/list/{listId}',
+    { params: { path: { userId: user?.uid ?? '', listId } } },
+    { enabled: !!user },
+  );
 }
 
-export function useLists(userId: string) {
-  return apiClient.useQuery('get', '/user/{userId}/list', {
-    params: { path: { userId } },
-  });
+export function useLists() {
+  const user = auth.currentUser;
+  return apiClient.useQuery(
+    'get',
+    '/user/{userId}/list',
+    { params: { path: { userId: user?.uid ?? '' } } },
+    { enabled: !!user },
+  );
 }
 
 export function useCreateList() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
   const m = apiClient.useMutation('post', '/user/{userId}/list', {
     onSuccess() {
@@ -31,11 +33,14 @@ export function useCreateList() {
       queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
-  return (userId: string, name: string) =>
-    m.mutate({ params: { path: { userId } }, body: { name } });
+  if (!user) {
+    return () => {};
+  }
+  return (name: string) => m.mutate({ params: { path: { userId: user.uid } }, body: { name } });
 }
 
 export function useUpdateList() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
   const m = apiClient.useMutation('put', '/user/{userId}/list/{listId}', {
     onSuccess: (_, variables) => {
@@ -46,11 +51,15 @@ export function useUpdateList() {
       queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
-  return (userId: string, listId: string, name: string) =>
-    m.mutate({ params: { path: { userId, listId } }, body: { name } });
+  if (!user) {
+    return () => {};
+  }
+  return (listId: string, name: string) =>
+    m.mutate({ params: { path: { userId: user.uid, listId } }, body: { name } });
 }
 
 export function useDeleteList() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
   const m = apiClient.useMutation('delete', '/user/{userId}/list/{listId}', {
     onSuccess: (_, variables) => {
@@ -61,39 +70,61 @@ export function useDeleteList() {
       queryClient.invalidateQueries({ queryKey: ['get', '/user'] });
     },
   });
-  return (userId: string, listId: string) => m.mutate({ params: { path: { userId, listId } } });
+  if (!user) {
+    return () => {};
+  }
+  return (listId: string) => m.mutate({ params: { path: { userId: user.uid, listId } } });
 }
 
-export function useListQuestion(props: AuthorizedApiRequest<ListQuestionId>) {
-  return useQuery({
-    queryKey: [listQueryKey, props.listId, questionQueryKey, props.questionId],
-    queryFn: () => getQuestionFromList(props),
-    retry: false,
-  });
+export function useListQuestion(listId: string, questionId: string) {
+  const user = auth.currentUser;
+  return apiClient.useQuery(
+    'get',
+    '/user/{userId}/list/{listId}/question/{questionId}',
+    { params: { path: { userId: user?.uid ?? '', listId, questionId } } },
+    { enabled: !!user, retry: false },
+  );
 }
 
 export function useAddQuestionToList() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: addQuestionToList,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
-      queryClient.invalidateQueries({
-        queryKey: [listQueryKey, variables.listId, questionQueryKey, variables.questionId],
-      });
-    },
-  });
+  const m = apiClient.useMutation('post', '/user/{userId}/list/{listId}/question/{questionId}');
+  if (!user) {
+    return () => {};
+  }
+  return (listId: string, questionId: string) =>
+    m.mutate(
+      { params: { path: { userId: user.uid, listId, questionId } } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}/list/{listId}'] });
+        },
+      },
+    );
 }
 
 export function useRemoveQuestionFromList() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: removeQuestionFromList,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [listQueryKey, variables.listId] });
-      queryClient.invalidateQueries({
-        queryKey: [listQueryKey, variables.listId, questionQueryKey, variables.questionId],
-      });
-    },
-  });
+  const m = apiClient.useMutation('delete', '/user/{userId}/list/{listId}/question/{questionId}');
+  if (!user) {
+    return () => {};
+  }
+  return (listId: string, questionId: string) =>
+    m.mutate(
+      { params: { path: { userId: user.uid, listId, questionId } } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}/list/{listId}'] });
+          queryClient.invalidateQueries({
+            queryKey: [
+              'get',
+              '/user/{userId}/list/{listId}/question/{questionId}',
+              { params: { path: { userId: user.uid, listId, questionId } } },
+            ],
+          });
+        },
+      },
+    );
 }

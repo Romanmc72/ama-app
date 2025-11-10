@@ -62,7 +62,7 @@ export interface paths {
                     /** @description Final ID from previous page */
                     finalId?: string;
                     /** @description Tag to match (specify multiple times for && match) */
-                    tag?: number;
+                    tag?: string[];
                     /** @description Get a random question */
                     random?: boolean;
                 };
@@ -621,7 +621,7 @@ export interface paths {
                     /** @description Final ID from previous page */
                     finalId?: string;
                     /** @description Tag to match (specify multiple times for && match) */
-                    tag?: number;
+                    tag?: string[];
                     /** @description Get a random question */
                     random?: boolean;
                 };

@@ -1,40 +1,62 @@
-import { createUser, deleteUser, getUser, updateUser } from '@/api/user';
-import { UserId, AuthorizedApiRequest } from '@/shapes';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { getAuth } from 'firebase/auth';
+import { apiClient } from './client';
+import { type components } from '@/generated/api';
 
-export const userQueryKey = 'user';
+const auth = getAuth();
 
-// TODO: maybe use the user context to get the userId and idToken or raise errors when that is null (or not provided?)
-
-export function useUser(props: AuthorizedApiRequest<UserId>) {
-  return useQuery({
-    queryKey: [userQueryKey, props.userId],
-    queryFn: () => getUser(props),
-  });
+export function useUser() {
+  const user = auth.currentUser;
+  return apiClient.useQuery(
+    'get',
+    '/user/{userId}',
+    { params: { path: { userId: user?.uid ?? '' } } },
+    { enabled: !!user },
+  );
 }
 
 export function useUpdateUser() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateUser,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [userQueryKey, variables.userId] });
-    },
-  });
+  const m = apiClient.useMutation('put', '/user/{userId}');
+  if (!user) {
+    return () => {};
+  }
+  return (userData: components['schemas']['user.BaseUser']) =>
+    m.mutate(
+      {
+        params: {
+          path: { userId: user.uid },
+        },
+        body: userData,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}'] });
+        },
+      },
+    );
 }
 
 export function useCreateUser() {
-  return useMutation({
-    mutationFn: createUser,
-  });
+  const m = apiClient.useMutation('post', '/user');
+  return (userData: components['schemas']['user.BaseUser']) => m.mutate({ body: userData });
 }
 
 export function useDeleteUser() {
+  const user = auth.currentUser;
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteUser,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [userQueryKey, variables.userId] });
-    },
-  });
+  const m = apiClient.useMutation('delete', '/user/{userId}');
+  if (!user) {
+    return () => {};
+  }
+  return () =>
+    m.mutate(
+      { params: { path: { userId: user.uid } } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['get', '/user/{userId}'] });
+        },
+      },
+    );
 }

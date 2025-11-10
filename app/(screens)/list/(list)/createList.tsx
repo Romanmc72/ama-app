@@ -3,16 +3,14 @@ import { Br, Button, ThemedInput, ThemedText, ThemedView } from '@/components';
 import { viewStyles } from '@/styles/view';
 import { Stack, useRouter } from 'expo-router';
 import { useCreateList } from '@/hooks';
-import { useUserContext } from '@/contexts';
 
 export default function CreateList(): JSX.Element {
   const router = useRouter();
   const [listName, setListName] = useState<string>('');
   const createList = useCreateList();
-  const { user, idToken } = useUserContext();
 
   const handleCreateList = () => {
-    createList.mutate({ userId: user?.userId ?? '', name: listName, idToken: idToken ?? '' });
+    createList(listName);
     router.push('/list');
   };
   return (

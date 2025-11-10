@@ -47,12 +47,10 @@ export default function Ask(): JSX.Element {
     [idToken, questionId, finalId, random, tags],
   );
   const { data: question, isError, isFetching, refetch } = useQuestion(queryProps);
-  const { isSuccess: foundInLikedList, isLoading: loadingLikes } = useListQuestion({
-    userId: user?.userId ?? '',
-    idToken: idToken ?? '',
-    questionId: question?.questionId ?? '',
-    listId: LIKED_QUESTION_LIST_ID,
-  });
+  const { isSuccess: foundInLikedList, isLoading: loadingLikes } = useListQuestion(
+    LIKED_QUESTION_LIST_ID,
+    question?.questionId ?? '',
+  );
   const alreadyLiked = foundInLikedList && !loadingLikes;
 
   const GetQuestionButton = useCallback(() => {
@@ -133,12 +131,7 @@ export default function Ask(): JSX.Element {
       console.log(`Question is already liked ID: ${question.questionId}`);
       return;
     }
-    addQuestion.mutate({
-      idToken: idToken,
-      questionId: question?.questionId,
-      listId: LIKED_QUESTION_LIST_ID,
-      userId: user?.userId,
-    });
+    addQuestion(LIKED_QUESTION_LIST_ID, question?.questionId ?? '');
   }, [alreadyLiked, idToken, addQuestion, question, user]);
 
   const showQuestion = question && hasPressed && !isError;

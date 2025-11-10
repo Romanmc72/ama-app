@@ -2,6 +2,7 @@ import { ColorScheme } from '@/constants/Colors';
 import { LogInProps } from './auth';
 import { Subscription } from './subscription';
 import { ListId } from './list';
+import { components } from '@/generated/api';
 
 /** The settings related to how the user accesses the app. */
 export type UserSettings = {
@@ -37,4 +38,7 @@ export type UserBase = {
 
 export type User = UserBase & UserId;
 
-export type UserCreateProps = Omit<UserBase & LogInProps, 'firebaseId'>;
+export type UserCreateProps = Omit<
+  components['schemas']['user.BaseUser'] & LogInProps,
+  'firebaseId'
+>;

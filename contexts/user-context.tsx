@@ -12,13 +12,14 @@ import {
   ActionCodeSettings,
 } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import { AuthorizedApiRequest, LogInProps, User, UserBase, UserCreateProps } from '@/shapes';
+import { AuthorizedApiRequest, LogInProps, UserBase, UserCreateProps } from '@/shapes';
 import { useUser } from '@/hooks';
 import { useCreateUser, useDeleteUser } from '../hooks/api/useUser';
 import Constants from 'expo-constants';
+import { components } from '@/generated/api';
 
 type UserContextType = {
-  user?: User;
+  user?: components['schemas']['application.User'];
   idToken: string | null;
   logOut: () => void;
   logIn: (props: LogInProps | null) => Promise<void>;
@@ -77,25 +78,13 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
   );
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
-  const {
-    data: user,
-    isSuccess,
-    isError,
-    error,
-  } = useUser({ userId: userId ?? '', idToken: idToken ?? '' });
+  const { data: user, isSuccess, isError, error } = useUser();
   const createUserMutation = useCreateUser();
   const deleteUserMutation = useDeleteUser();
 
   const createUserOnBackend = useCallback(
-    (userData: AuthorizedApiRequest<UserBase>) => {
-      createUserMutation.mutate(userData, {
-        onSuccess: (data) => {
-          setUserId(data.userId);
-        },
-        onError: (error) => {
-          // Handle error, e.g., show a message to the user
-        },
-      });
+    (userData: components['schemas']['user.BaseUser']) => {
+      createUserMutation(userData);
     },
     [createUserMutation],
   );
@@ -107,7 +96,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         userBase.email,
         userBase.password,
       );
-      const userCreateBase: UserBase = {
+      const userCreateBase: components['schemas']['user.BaseUser'] = {
         ...userBase,
         firebaseId: credentials.user.uid,
       };
@@ -123,7 +112,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         // return;
       }
       setIdToken(idToken);
-      createUserOnBackend({ ...userCreateBase, idToken });
+      createUserOnBackend({ ...userCreateBase });
       setFbUser(credentials.user);
     },
     [createUserOnBackend],
@@ -138,7 +127,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
 
   const deleteUser = useCallback(() => {
     if (userId && idToken && fbUser) {
-      deleteUserMutation.mutate({ userId, idToken });
+      deleteUserMutation();
       firebaseDeleteUser(fbUser);
       logOut();
       return;
